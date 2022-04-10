@@ -1,0 +1,44 @@
+{
+  "name": "table",
+  "version": "0.0.1",
+  "description": "table\r =====",
+  "main": "index.html",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "serve": "webpack-dev-server",
+    "watch": "webpack --watch",
+    "server": "cd dist && live-server",
+    "start": "npm run build && npm-run-all --parallel watch server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sikr/table.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sikr/table/issues"
+  },
+  "homepage": "https://github.com/sikr/table#readme",
+  "devDependencies": {
+    "css-loader": "^6.7.1",
+    "favicons": "^6.2.2",
+    "favicons-webpack-plugin": "^5.0.2",
+    "html-webpack-plugin": "^5.5.0",
+    "live-server": "^1.1.0",
+    "node-sass": "^7.0.1",
+    "npm-run-all": "^4.1.5",
+    "sass-loader": "^12.6.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.2.8",
+    "typescript": "^4.6.3",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.8.1"
+  }
+}
