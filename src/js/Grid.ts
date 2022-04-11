@@ -90,7 +90,7 @@ class Grid implements IGridMethods {
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
 
     this.t = {
-      oc: null!,
+      c: null!,
         rchc: null!,
           rcht: null!,
         chc: null!,
@@ -110,7 +110,7 @@ class Grid implements IGridMethods {
     this.firstVisibleColumn = this.config.firstVisibleColumn;
   }
   public appendTo(ref: HTMLElement) {
-    ref.append(this.t.oc.getDomRef());
+    ref.append(this.t.c.getDomRef());
     let body: HTMLElement = <HTMLElement>document.getElementById('body');
     if (body) {
       this.t.scs.setWidth(parseInt(body.style.width, 10) + 12);
@@ -146,7 +146,7 @@ class Grid implements IGridMethods {
     let passive = 
 
     this.t.sc.addEventListener('scroll', <EventListener>this.scrollHandlerRef);
-    // this.t.oc.addEventListener('resize', <EventListener>this.resizeHandlerRef);
+    // this.t.c.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     window.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
     this.t.bt.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
@@ -169,13 +169,13 @@ class Grid implements IGridMethods {
   createResizer() {
     let resizerConfig: ResizerConfig = {
       orientation: Orientation.horizontal,
-      ref: this.t.oc.getDomRef(),
-      start: this.t.oc.getOffsetLeft() + this.config.rowHeaderWidth,
-      stop: this.t.oc.getOffsetLeft() + this.config.rowHeaderWidth + this.t.bc.getWidth(),
+      ref: this.t.c.getDomRef(),
+      start: this.t.c.getOffsetLeft() + this.config.rowHeaderWidth,
+      stop: this.t.c.getOffsetLeft() + this.config.rowHeaderWidth + this.t.bc.getWidth(),
       // id: 'resi',
       size: [6, this.config.rowHeight],
       resizerContainer: this.t.chc.getDomRef(),
-      overflowContainer: this.t.oc.getDomRef(),
+      overflowContainer: this.t.c.getDomRef(),
       scrollContainer: this.t.sc.getDomRef(),
       positions: this.config.columnPositions,
       // columns: this.config.columns
@@ -192,7 +192,7 @@ class Grid implements IGridMethods {
     this.selectRect = new SelectRectangle(this.t.bc.getDomRef());
   }
   createSkeleton() {
-    this.t.oc = new GridContainer()
+    this.t.c = new GridContainer()
     .setId(`${this.config.id}-outer-container`)
     .addClassName('container')
     .setHeight(this.config.height)
@@ -207,7 +207,7 @@ class Grid implements IGridMethods {
     .addClassName(`row-column-header-container`)
     .setHeight(this.config.rowHeight)
     .setWidth(this.config.rowHeaderWidth)
-    .appendTo(this.t.oc.getDomRef());
+    .appendTo(this.t.c.getDomRef());
 
     this.t.chc = new GridContainer()
     .setId(`${this.config.id}-column-header-container`)
@@ -215,7 +215,7 @@ class Grid implements IGridMethods {
     .setLeft(this.config.rowHeaderWidth)
     .setHeight(this.config.rowHeight)
     .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.oc.getDomRef())
+    .appendTo(this.t.c.getDomRef())
 
     this.t.rhc = new GridContainer()
     .setId(`${this.config.id}-row-header-container`)
@@ -224,7 +224,7 @@ class Grid implements IGridMethods {
     // .setHeight(this.config.visibleRows * this.config.rowHeight)
     .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
     .setWidth(this.config.rowHeaderWidth)
-    .appendTo(this.t.oc.getDomRef());
+    .appendTo(this.t.c.getDomRef());
 
     this.t.bc = new GridContainer()
     .setId(`${this.config.id}-body-container`)
@@ -234,7 +234,7 @@ class Grid implements IGridMethods {
     // .setHeight(this.config.visibleRows * this.config.rowHeight)
     .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
     .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.oc.getDomRef());
+    .appendTo(this.t.c.getDomRef());
 
     this.t.sc = new GridContainer()
     .setId(`${this.config.id}-scroll-container`)
@@ -244,14 +244,14 @@ class Grid implements IGridMethods {
     // .setHeight(this.config.visibleRows * this.config.rowHeight + this.config.scrollbarSize)
     .setHeight(this.config.height - this.config.rowHeight)
     .setWidth(this.config.width - this.config.rowHeaderWidth)
-    .appendTo(this.t.oc.getDomRef());
+    .appendTo(this.t.c.getDomRef());
 
     this.t.scs = new GridContainer()
     .setId(`${this.config.id}-scroll-container-shim`)
     .addClassName(`scroll-container-shim`)
     .appendTo(this.t.sc.getDomRef());
   
-    (this.t.oc as GridContainer)
+    (this.t.c as GridContainer)
     .setHeight(`100%`)
     .setWidth(`100%`)
 }
@@ -626,8 +626,8 @@ class Grid implements IGridMethods {
   }
   resizeHandler(event: Event) {
 
-    let width = this.t.oc.getOffsetWidth();
-    let height = this.t.oc.getClientHeight();
+    let width = this.t.c.getOffsetWidth();
+    let height = this.t.c.getClientHeight();
     console.log(`width: ${width}, height: ${height}`);
 
     // this.t.chc
