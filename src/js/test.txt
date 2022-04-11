@@ -1,1 +1,0 @@
-Test to verify that vscode uses the correct (local) user/email at commit
