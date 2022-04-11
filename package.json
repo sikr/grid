@@ -1,7 +1,7 @@
 {
-  "name": "table",
+  "name": "grid",
   "version": "0.0.1",
-  "description": "table\r =====",
+  "description": "grid\r =====",
   "main": "index.html",
   "directories": {
     "doc": "docs"
@@ -16,15 +16,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sikr/table.git"
+    "url": "git+https://github.com/sikr/grid.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sikr/table/issues"
+    "url": "https://github.com/sikr/grid/issues"
   },
-  "homepage": "https://github.com/sikr/table#readme",
+  "homepage": "https://github.com/sikr/grid#readme",
   "devDependencies": {
     "css-loader": "^6.7.1",
     "favicons": "^6.2.2",
