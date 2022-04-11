@@ -1,25 +1,25 @@
-import { ITableContainer } from './Types';
+import { IGridContainer } from './Types';
 
-export { TableContainer, TableTable };
+export { GridContainer, GridTable };
 
-class TableContainer implements ITableContainer {
+class GridContainer implements IGridContainer {
   domRef;
   constructor() {
     this.domRef = document.createElement('div');
   }
-  addClassName(className: string): TableContainer {
+  addClassName(className: string): GridContainer {
     this.domRef.className = this.domRef.classList + className;
     return this;
   }
-  addEventListener(name: string, listener: EventListener, options?: boolean | EventListenerOptions): TableContainer {
+  addEventListener(name: string, listener: EventListener, options?: boolean | EventListenerOptions): GridContainer {
     this.domRef.addEventListener(name, listener, options);
     return this;
   }
-  append(domRef: HTMLElement): TableContainer {
+  append(domRef: HTMLElement): GridContainer {
     this.domRef.append(domRef);
     return this;
   }
-  appendTo(domRef: HTMLElement): TableContainer {
+  appendTo(domRef: HTMLElement): GridContainer {
     domRef.append(this.domRef);
     return this;
   }
@@ -53,35 +53,35 @@ class TableContainer implements ITableContainer {
   getWidth(): number {
     return parseInt(this.domRef.style.width, 10);
   }
-  removeEventListener(name: string, listener: EventListener, options?: boolean | EventListenerOptions): TableContainer {
+  removeEventListener(name: string, listener: EventListener, options?: boolean | EventListenerOptions): GridContainer {
     this.domRef.removeEventListener(name, listener, options);
     return this;
   }
-  setHeight(height: number | string): TableContainer {
+  setHeight(height: number | string): GridContainer {
     this.domRef.style.height = this.pixelOrPercentOrAuto(height);
     return this;
   }
-  setId(id: string): TableContainer {
+  setId(id: string): GridContainer {
     this.domRef.id = id;
     return this;
   }
-  setLeft(left: number | string): TableContainer {
+  setLeft(left: number | string): GridContainer {
     this.domRef.style.left = this.pixel(left);
     return this;
   }
-  setScrollLeft(scrollLeft: number): TableContainer {
+  setScrollLeft(scrollLeft: number): GridContainer {
     this.domRef.scrollLeft = scrollLeft;
     return this;
   }
-  setScrollTop(scrollTop: number): TableContainer {
+  setScrollTop(scrollTop: number): GridContainer {
     this.domRef.scrollTop = scrollTop;
     return this;
   }
-  setTop(top: number | string): TableContainer {
+  setTop(top: number | string): GridContainer {
     this.domRef.style.top = this.pixel(top);
     return this;
   }
-  setWidth(width: number | string): TableContainer {
+  setWidth(width: number | string): GridContainer {
     this.domRef.style.width = this.pixelOrPercentOrAuto(width);
     return this;
   }
@@ -120,7 +120,7 @@ class TableContainer implements ITableContainer {
   }
 }
 
-class TableTable extends TableContainer {
+class GridTable extends GridContainer {
   constructor() {
     super()
     this.domRef = document.createElement('table');

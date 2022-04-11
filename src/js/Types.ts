@@ -1,12 +1,10 @@
-import { TableContainer } from "./TableContainer";
-
 // basic table interface describing public methods
-export interface ITableMethods {
+export interface IGridMethods {
   getCell(row: number, column: number): HTMLElement | null
 }
 
 // external table properties struct for consumers
-export interface ITableProperties {
+export interface IGridProperties {
   // 
   id: string;
   // number of columns
@@ -38,17 +36,17 @@ export interface ITableProperties {
   // snap to column or scroll pixel for pixel
   scrollToSnap: Boolean;
   // render using HTML table or div
-  renderStyle: TableRenderStyle;
+  renderStyle: GridRenderStyle;
 }
 
 // internal table properties struct
-export interface ITablePropertiesInternal extends ITableProperties {
+export interface IGridPropertiesInternal extends IGridProperties {
   columnPositions: number[],
   scrollbarSize: number;
   visibleRows: number;
 }
 
-export interface ITableContainer {
+export interface IGridContainer {
   domRef: HTMLElement;
   addClassName(className: string): unknown;
   addEventListener(name: string, listener: EventListener, options?: boolean | EventListenerOptions): unknown;
@@ -75,7 +73,7 @@ export interface ITableContainer {
 }
 
 // internal table fragment properties struct
-export interface ITableFragment {
+export interface IGridFragment {
   id: string;
   startRow: number;
   stopRow: number;
@@ -91,19 +89,19 @@ export interface ITableFragment {
 }
 
 // html container skeleton
-export interface ITableSkeleton {
-  oc: ITableContainer,         // outer container
-    ic: ITableContainer,       // inner container
-      rchc: ITableContainer,   // row column header container
-        rcht: ITableContainer, // row column header table
-      chc: ITableContainer,    // column header container
-        cht: ITableContainer,  // column header table
-      rhc: ITableContainer,    // row header container
-        rht: ITableContainer,  // row header table
-      bc: ITableContainer,     // body container
-        bt: ITableContainer,   // body table
-      sc: ITableContainer,     // scroll container
-        scs: ITableContainer   // scroll container shim
+export interface IGridSkeleton {
+  oc: IGridContainer,         // outer container
+    ic: IGridContainer,       // inner container
+      rchc: IGridContainer,   // row column header container
+        rcht: IGridContainer, // row column header table
+      chc: IGridContainer,    // column header container
+        cht: IGridContainer,  // column header table
+      rhc: IGridContainer,    // row header container
+        rht: IGridContainer,  // row header table
+      bc: IGridContainer,     // body container
+        bt: IGridContainer,   // body table
+      sc: IGridContainer,     // scroll container
+        scs: IGridContainer   // scroll container shim
 };
 
 export enum Orientation {
@@ -111,7 +109,7 @@ export enum Orientation {
   'vertical' = 'vertical'
 }
 
-export enum TableRenderStyle {
+export enum GridRenderStyle {
   'table' = 'table',
   'div' = 'div'
 }
