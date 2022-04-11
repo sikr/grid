@@ -91,17 +91,16 @@ export interface IGridFragment {
 // html container skeleton
 export interface IGridSkeleton {
   oc: IGridContainer,         // outer container
-    ic: IGridContainer,       // inner container
-      rchc: IGridContainer,   // row column header container
-        rcht: IGridContainer, // row column header table
-      chc: IGridContainer,    // column header container
-        cht: IGridContainer,  // column header table
-      rhc: IGridContainer,    // row header container
-        rht: IGridContainer,  // row header table
-      bc: IGridContainer,     // body container
-        bt: IGridContainer,   // body table
-      sc: IGridContainer,     // scroll container
-        scs: IGridContainer   // scroll container shim
+    rchc: IGridContainer,   // row column header container
+      rcht: IGridContainer, // row column header table
+    chc: IGridContainer,    // column header container
+      cht: IGridContainer,  // column header table
+    rhc: IGridContainer,    // row header container
+      rht: IGridContainer,  // row header table
+    bc: IGridContainer,     // body container
+      bt: IGridContainer,   // body table
+    sc: IGridContainer,     // scroll container
+      scs: IGridContainer   // scroll container shim
 };
 
 export enum Orientation {
