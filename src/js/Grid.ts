@@ -92,13 +92,13 @@ class Grid implements IGridMethods {
     this.t = {
       c: null!,
         rchc: null!,
-          rcht: null!,
+          rchg: null!,
         chc: null!,
-          cht: null!,
+          chg: null!,
         rhc: null!,
-          rht: null!,
+          rhg: null!,
         bc: null!,
-          bt: null!,
+          bg: null!,
         sc: null!,
           scs: null!
     };
@@ -149,8 +149,8 @@ class Grid implements IGridMethods {
     // this.t.c.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     window.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
-    this.t.bt.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
-    this.t.bt.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
+    this.t.bg.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
+    this.t.bg.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
   }
   create() {
     this.init();
@@ -349,7 +349,7 @@ class Grid implements IGridMethods {
     return table;
   }
   createGridFragments() {
-    this.t.rcht = this.createGridFragment({
+    this.t.rchg = this.createGridFragment({
       id: 'row-column-header',
       startRow: 0,
       stopRow: 0,
@@ -363,9 +363,9 @@ class Grid implements IGridMethods {
       enumerate: null,
       focusHandler: null
     });
-    this.t.rchc.append(this.t.rcht.getDomRef());
+    this.t.rchc.append(this.t.rchg.getDomRef());
 
-    this.t.cht = this.createGridFragment({
+    this.t.chg = this.createGridFragment({
       id: 'column-header',
       startRow: 0,
       stopRow: 0,
@@ -379,9 +379,9 @@ class Grid implements IGridMethods {
       enumerate: 'A',
       focusHandler: null
     });
-    this.t.chc.append(this.t.cht.getDomRef());
+    this.t.chc.append(this.t.chg.getDomRef());
 
-    this.t.rht = this.createGridFragment({
+    this.t.rhg = this.createGridFragment({
       id: 'row-header',
       startRow: 1,
       stopRow: this.config.rows,
@@ -395,9 +395,9 @@ class Grid implements IGridMethods {
       enumerate: 1,
       focusHandler: null
     });
-    this.t.rhc.append(this.t.rht.getDomRef());
+    this.t.rhc.append(this.t.rhg.getDomRef());
 
-    this.t.bt = this.createGridFragment({
+    this.t.bg = this.createGridFragment({
       id: 'body',
       startRow: 1,
       stopRow: this.config.rows,
@@ -411,7 +411,7 @@ class Grid implements IGridMethods {
       enumerate: null,
       focusHandler: this.focusHandler
     });
-    this.t.bc.append(this.t.bt.getDomRef());
+    this.t.bc.append(this.t.bg.getDomRef());
   }
   getCell(row: number, column: number): HTMLElement | null {
     // ...
@@ -724,11 +724,11 @@ class Grid implements IGridMethods {
   }
   // setFocusSilently() {
   //   setTimeout(() => {
-  //     this.t.bt.removeEventListener('focus', <EventListener>this.focusHandlerRef);
+  //     this.t.bg.removeEventListener('focus', <EventListener>this.focusHandlerRef);
   //     if (this.focusElement) {
   //       this.focusElement.focus();
   //     }
-  //     this.t.bt.addEventListener('focus', <EventListener>this.focusHandlerRef);
+  //     this.t.bg.addEventListener('focus', <EventListener>this.focusHandlerRef);
   //   }, 0);
   // }
 }

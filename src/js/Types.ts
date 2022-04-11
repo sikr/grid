@@ -92,13 +92,13 @@ export interface IGridFragment {
 export interface IGridSkeleton {
   c: IGridContainer,        // outer container
     rchc: IGridContainer,   // row column header container
-      rcht: IGridContainer, // row column header table
+      rchg: IGridContainer, // row column header grid
     chc: IGridContainer,    // column header container
-      cht: IGridContainer,  // column header table
+      chg: IGridContainer,  // column header grid
     rhc: IGridContainer,    // row header container
-      rht: IGridContainer,  // row header table
+      rhg: IGridContainer,  // row header grid
     bc: IGridContainer,     // body container
-      bt: IGridContainer,   // body table
+      bg: IGridContainer,   // body grid
     sc: IGridContainer,     // scroll container
       scs: IGridContainer   // scroll container shim
 };
