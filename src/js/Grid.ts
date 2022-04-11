@@ -91,17 +91,16 @@ class Grid implements IGridMethods {
 
     this.t = {
       oc: null!,
-        ic: null!,
-          rchc: null!,
-            rcht: null!,
-          chc: null!,
-            cht: null!,
-          rhc: null!,
-            rht: null!,
-          bc: null!,
-            bt: null!,
-          sc: null!,
-            scs: null!
+        rchc: null!,
+          rcht: null!,
+        chc: null!,
+          cht: null!,
+        rhc: null!,
+          rht: null!,
+        bc: null!,
+          bt: null!,
+        sc: null!,
+          scs: null!
     };
     this.dragdrop = new DragDrop();
     this.focusRect = null!;
@@ -202,14 +201,6 @@ class Grid implements IGridMethods {
     // .setWidth('100%');
     .setHeight(`100%`)
     .setWidth(`100%`);
-
-    // this.t.ic = new GridContainer()
-    // .setId(`${this.config.id}-inner-container`)
-    // .setWidth(this.config.width)
-    // .setHeight(this.config.height)
-    // .setWidth('auto')
-    // .setHeight('auto')
-    // .appendTo(this.t.oc.getDomRef());
 
     this.t.rchc = new GridContainer()
     .setId(`${this.config.id}-row-column-header-container`)
