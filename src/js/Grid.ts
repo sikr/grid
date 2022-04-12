@@ -256,7 +256,7 @@ class Grid implements IGridMethods {
     .setWidth(`100%`)
 }
   createGridFragment(o: IGridFragment): GridContainer {
-    let table;
+    let table: GridContainer;
     let colgroup;
     let col;
     let row;
@@ -266,87 +266,108 @@ class Grid implements IGridMethods {
     let c;
     let id;
     let width = Utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
-    let enumerate: number | string = 1;
-    let enumerationText = '';
     let style: GridRenderStyle = this.config.renderStyle;
 
-    if (style == GridRenderStyle.table) {
+    table = this.createTableHTML(o);
+
+    for (r = o.startRow; r <= o.stopRow; r++) {
+      row = this.createRowHTML(o);
+      table.append(row);
+      for (c = o.startColumn; c <= o.stopColumn; c++) {
+        cell = this.createCellHTML(o, r, c);
+        row.append(cell);
+      }
+    }
+    return table;
+  }
+  createTableHTML(o: IGridFragment): GridContainer {
+    let table;
+    let colgroup;
+    let col;
+    let width = Utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
+    let r, c;
+    if (this.config.renderStyle == GridRenderStyle.table) {
       table = new GridTable()
-      .setId(o.id)
-      .addClassName(`table`)
-      .setWidth(width)
-      .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
-      
+        .setId(o.id)
+        .addClassName(`table`)
+        .setWidth(width)
+        .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
+
       colgroup = document.createElement('colgroup');
       table.append(colgroup);
-      
+
       for (c = o.startColumn; c <= o.stopColumn; c++) {
         col = document.createElement('col');
         col.style.width = o.columnWidths[c] + 'px';
         colgroup.append(col);
       }
     }
-    else if (style == GridRenderStyle.div) {
+    else// if (this.config.renderStyle == GridRenderStyle.div) 
+    {
       table = new GridContainer()
-      .setId(o.id)
-      .addClassName(`tbody`)
-      .setWidth(width)
-      .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
-    }
-    else {
-      throw(new Error(`Grid: render style undefined`));
-    }
-
-    if (typeof o.enumerate == 'number') {
-      enumerate = o.enumerate;
-    }
-    else if (typeof o.enumerate == 'string') {
-      enumerate = o.enumerate.charCodeAt(0);
-    }
-    for (r = o.startRow; r <= o.stopRow; r++) {
-      if (style == GridRenderStyle.table) {
-        row = document.createElement('tr');
-        table.append(row);
-      }
-      else {
-        row = document.createElement('div');
-        row.className = 'tr';
-        table.append(row);
-      }
-      for (c = o.startColumn; c <= o.stopColumn; c++) {
-        if (typeof o.enumerate == 'string') {
-          enumerationText = String.fromCharCode((<number>enumerate)++);
-        }
-        else if (typeof o.enumerate == 'number') {
-          (enumerationText = (enumerate++).toString()).toString();
-        }
-        id = o.cellIdPrefix + '-' + r.toString() + '-' + c.toString();
-        if (style == GridRenderStyle.table) {
-          cell = document.createElement(o.cellType);
-        }
-        else {
-          cell = document.createElement('div');
-          cell.className = o.cellType;
-          cell.style.width = `${this.config.columnWidths[c-1]}px`;
-        }
-        cell.id = id;
-        cell.setAttribute('tabindex', '0');
-        if (style === GridRenderStyle.table) {
-          div = document.createElement('div');
-          div.innerText = enumerationText;
-          div.setAttribute('draggable', 'false');
-          cell.append(div)
-        }
-        else {
-          cell.innerText = enumerationText;
-        }
-        if (o.focusHandler) {
-          cell.addEventListener('focus', o.focusHandler.bind(this));
-        }
-        row.append(cell);
-      }
+        .setId(o.id)
+        .addClassName(`tbody`)
+        .setWidth(width)
+        .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
     }
     return table;
+  }
+  createRowHTML(o: IGridFragment): HTMLElement {
+    let row;
+    if (this.config.renderStyle == GridRenderStyle.table) {
+      row = document.createElement('tr');
+    }
+    else {
+      row = document.createElement('div');
+      row.className = 'tr';
+    }
+    return row;
+  }
+  createCellHTML(o: IGridFragment, row: number, column: number): HTMLElement {
+    let enumerate: number | string = 1;
+    let enumerationText = '';
+    let cell;
+    let id;
+    let div;
+
+    // number or chars for row column header
+    if (typeof o.enumerate == 'number') {
+      enumerate = row;
+      (enumerationText = (enumerate++).toString()).toString();
+    }
+    else if (typeof o.enumerate == 'string') {
+      enumerate = o.enumerate.charCodeAt(0)+column-1;
+      enumerationText = String.fromCharCode((<number>enumerate));
+    }
+
+    if (this.config.renderStyle == GridRenderStyle.table) {
+      cell = document.createElement(o.cellType);
+    }
+    else {
+      cell = document.createElement('div');
+      cell.className = o.cellType;
+      if (row == 0) {
+        cell.style.width = `${this.config.columnWidths[column - 1]}px`;
+        // cell.style.width = `auto`;
+      }
+    }
+
+    cell.id = `${o.cellIdPrefix}-${row.toString()}-${column.toString()}`;
+
+    cell.setAttribute('tabindex', '0');
+    if (this.config.renderStyle === GridRenderStyle.table) {
+      div = document.createElement('div');
+      div.innerText = enumerationText;
+      div.setAttribute('draggable', 'false');
+      cell.append(div)
+    }
+    else {
+      cell.innerText = enumerationText;
+    }
+    if (o.focusHandler) {
+      cell.addEventListener('focus', o.focusHandler.bind(this));
+    }
+    return cell;
   }
   createGridFragments() {
     this.t.rchg = this.createGridFragment({
