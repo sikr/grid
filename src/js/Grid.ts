@@ -273,22 +273,19 @@ class Grid implements IGridMethods {
 }
   createGridFragment(o: IGridFragment): GridContainer {
     let table: GridContainer;
-    let colgroup;
-    let col;
     let row;
     let cell;
-    let div;
     let r;
     let c;
-    let id;
-    let width = this.utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
-    let style: GridRenderStyle = this.config.renderStyle;
 
     table = this.createTableHTML(o);
 
+    let tbody = this.createTableBodyHTML(o);
+    table.append(tbody);
+
     for (r = o.startRow; r <= o.stopRow; r++) {
       row = this.createRowHTML(o);
-      table.append(row);
+      tbody.append(row);
       for (c = o.startColumn; c <= o.stopColumn; c++) {
         cell = this.createCellHTML(o, r, c);
         row.append(cell);
@@ -296,8 +293,20 @@ class Grid implements IGridMethods {
     }
     return table;
   }
+  createTableBodyHTML(o: IGridFragment): HTMLElement {
+    let tbody;
+    if (this.config.renderStyle == GridRenderStyle.table) {
+      tbody = document.createElement('tbody');
+    }
+    else {
+      tbody = document.createElement('div');
+    }
+    tbody.classList.add('grid-body')
+    return tbody;
+  }
   createTableHTML(o: IGridFragment): GridContainer {
     let table;
+    let tbody;
     let colgroup;
     let col;
     let width = this.utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
@@ -306,13 +315,13 @@ class Grid implements IGridMethods {
     if (this.config.renderStyle == GridRenderStyle.table) {
       table = new GridTable()
         .setId(o.id)
-        .addClassName(`grid-body`)
+        .addClassName(`grid-table`)
         .setWidth(width)
         .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
 
       colgroup = document.createElement('colgroup');
       table.append(colgroup);
-
+      
       for (c = o.startColumn; c <= o.stopColumn; c++) {
         col = document.createElement('col');
         if (o.columnWidths[c] !== 100) {
@@ -324,10 +333,10 @@ class Grid implements IGridMethods {
     else// if (this.config.renderStyle == GridRenderStyle.div) 
     {
       table = new GridContainer()
-        .setId(o.id)
-        .addClassName(`grid-body`)
-        .setWidth(width)
-        .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
+      .setId(o.id)
+      .addClassName(`grid-table`)
+      .setWidth(width)
+      .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
     }
     return table;
   }
