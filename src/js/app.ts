@@ -1,6 +1,8 @@
 import { IGridProperties } from './Types';
 import { GridRenderStyle } from './Types';
 import { Grid } from './Grid';
+import  data from '../testdata/data.1000.json';
+import  model from '../testdata/data.model.json';
 
 import '../css/grid.scss';
 
@@ -42,7 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollLeft: 0,
     scrollTop: 0,
     scrollToSnap: true,
-    renderStyle: GridRenderStyle.table
+    renderStyle: GridRenderStyle.table,
+    data: data,
+    model: model
   }
   // var table = new Grid({
   //   id: 'my',

@@ -44,6 +44,7 @@ table.table tr td, table.table tr th{
   vertical-align: middle;
   z-index: 10;
   white-space: nowrap;
+  user-select: none;
 }
 table.table tr th{
   background-color: #eee;
