@@ -370,7 +370,7 @@ class Grid implements IGridMethods {
     }
     else if (row > 0) {
       let dataRow = this.config.data[row-1 as keyof typeof this.config.data];
-      let key = this.config.model[column];
+      let key = this.config.model[column-1];
       textContent = dataRow[key]
       this.config.data
     }
