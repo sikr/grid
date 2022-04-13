@@ -94,7 +94,7 @@ export interface IGridFragment {
 
 // html container skeleton
 export interface IGridSkeleton {
-  c: IGridContainer,        // outer container
+  c: IGridContainer,        // container
     rchc: IGridContainer,   // row column header container
       rchg: IGridContainer, // row column header grid
     chc: IGridContainer,    // column header container

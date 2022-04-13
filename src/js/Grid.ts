@@ -195,7 +195,7 @@ class Grid implements IGridMethods {
   }
   createSkeleton() {
     this.t.c = new GridContainer()
-    .setId(`${this.config.id}-outer-container`)
+    .setId(`${this.config.id}-container`)
     .addClassName('container')
     .setHeight(this.config.height)
     .setWidth(this.config.width)
@@ -291,7 +291,7 @@ class Grid implements IGridMethods {
     if (this.config.renderStyle == GridRenderStyle.table) {
       table = new GridTable()
         .setId(o.id)
-        .addClassName(`table`)
+        .addClassName(`grid-body`)
         .setWidth(width)
         .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
 
@@ -300,7 +300,9 @@ class Grid implements IGridMethods {
 
       for (c = o.startColumn; c <= o.stopColumn; c++) {
         col = document.createElement('col');
-        col.style.width = o.columnWidths[c] + 'px';
+        if (o.columnWidths[c] !== 100) {
+          col.style.width = o.columnWidths[c] + 'px';
+        }
         colgroup.append(col);
       }
     }
@@ -308,7 +310,7 @@ class Grid implements IGridMethods {
     {
       table = new GridContainer()
         .setId(o.id)
-        .addClassName(`tbody`)
+        .addClassName(`grid-body`)
         .setWidth(width)
         .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
     }
@@ -321,7 +323,8 @@ class Grid implements IGridMethods {
     }
     else {
       row = document.createElement('div');
-      row.className = 'tr';
+      // net yet needed due to cascading
+      // row.className = 'grid-row';
     }
     return row;
   }
@@ -353,10 +356,19 @@ class Grid implements IGridMethods {
     }
     else {
       cell = document.createElement('div');
-      cell.className = o.cellType;
-      if (row == 0) {
+      if (o.cellType === 'th') {
+        cell.className = 'grid-header-cell';
+
+      }
+      else if (o.cellType === 'td') {
+        // not yet needed due to cascading
+        // cell.className = 'grid-cell';
+
+      }
+      // the width only need to be set in the first row due to display: table-cell
+      // < 2 to cover header & body cells which are in different containers...
+      if (column > 0 && row < 2 && this.config.columnWidths[column - 1] !== 100) {
         cell.style.width = `${this.config.columnWidths[column - 1]}px`;
-        // cell.style.width = `auto`;
       }
     }
 
@@ -366,7 +378,6 @@ class Grid implements IGridMethods {
     if (this.config.renderStyle === GridRenderStyle.table) {
       div = document.createElement('div');
       div.innerText = textContent;
-      div.setAttribute('draggable', 'false');
       cell.append(div)
     }
     else {
