@@ -87,7 +87,6 @@ table.grid-table {
         // padding-left: 4px;
         padding: 0px;
         vertical-align: middle;
-        z-index: 10;
         white-space: nowrap;
         user-select: none;
       }
@@ -126,6 +125,7 @@ div.grid-table {
   height: 100%;
   width: 100%;
   table-layout: fixed;
+  z-index: 10;
   div { // grid-body
     display: table-row-group;
 
@@ -135,6 +135,7 @@ div.grid-table {
       height: 25px;
   
       div { //.grid-header-cell, .grid-cell
+        position: relative;
         box-sizing: border-box;
         display: table-cell;
         width: 100px;
@@ -151,6 +152,7 @@ div.grid-table {
         padding: 0 3px;
         user-select: none;
         overflow: hidden;
+        z-index: 10;
       }
       div.grid-header-cell {
         background-color: #eee;

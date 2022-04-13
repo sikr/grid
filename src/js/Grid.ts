@@ -750,6 +750,12 @@ class Grid implements IGridMethods {
       clearTimeout(Grid.scrollTimerId);
     }
     let cell = this.utils.getCell((<CustomEvent>event).detail, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+    // if (cell) {
+    //   this.trc.log(`cell: ${cell.id}`)
+    // }
+    // else {
+    //   this.trc.log('cell is undefined')
+    // }
     if (cell && cell.id.indexOf('g-') === 0) {
       this.selectRect.update(null, cell);
     }

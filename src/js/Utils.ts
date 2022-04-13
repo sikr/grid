@@ -62,7 +62,7 @@ class Utils {
     let i = 0;
     let { target  } = event;
     if (nodeName) {
-      while ((target as HTMLElement).nodeName !== nodeName) {
+      while (target && (target as HTMLElement).nodeName !== nodeName) {
         (target as HTMLElement) = ((event.target as HTMLElement).parentNode as HTMLElement);
         if (i++ > 2) {
           return null;

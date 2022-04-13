@@ -62,7 +62,6 @@ class SelectRectangle {
   }
 
   update(from: HTMLElement | null, to: HTMLElement | null) {
-    this.trc.log('update' + new Date().getMilliseconds())
     let changed = false;
     if (from || to) {
       if (from) {
