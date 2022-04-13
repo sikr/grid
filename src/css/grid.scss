@@ -1,76 +1,39 @@
-$selection-color: purple;
 $selection-color: #4488FF;
 $selection-color: #3472dc;
 $selection-color: green;
 $selection-color: deeppink;
 $selection-color: darkorange;
+$selection-color: purple;
 
+/**************************************
+ * Global attributes
+ */
 html {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   // font-family:Arial, Helvetica, sans-serif;
 }
-
 body {
   width: auto;
   height: auto;
 }
 
-@function box-sizing ($type: border-box){
-  // -webkit-box-sizing: $type;
-  // -moz-box-sizing:    $type;
-  $box-sizing: $type;
-  @return ($box-sizing);
-}
+/**************************************
+ * Functions
+ */
+//  @function box-sizing ($type: border-box){
+//   // -webkit-box-sizing: $type;
+//   // -moz-box-sizing:    $type;
+//   $box-sizing: $type;
+//   @return ($box-sizing);
+// }
 
-table.table{
-  position: absolute;
-  table-layout: fixed;
-  border-spacing: 0;
-  z-index: 10;
-  font-size: 0.80em;
-  // border-collapse: collapse;
-}
-table.table tr td, table.table tr th{
-  box-sizing: box-sizing();
-  border-color: #ddd;
-  border-style: solid;
-  border-width: 0 1px 1px 0;
-  height: 25px;
-  outline: none;
-  overflow: hidden;
-  // padding: 2px;
-  // padding-left: 4px;
-  padding: 0px;
-  vertical-align: middle;
-  z-index: 10;
-  white-space: nowrap;
-  user-select: none;
-}
-table.table tr th{
-  background-color: #eee;
-  border-color: #bbb;
-  font-weight: normal;
-}
-table.table tr td input{
-  border-width: 0;
-  font-size: inherit;
-  margin: 0;
-  outline: none;
-  padding: 3px;
-  background-color: #ccc;
-  width: 100%;
-  height: 100%;
-
-}
-table.table tr td div {
-  box-sizing: box-sizing();;
-  height: 100%;
-  padding: 3px;
-}
+/**************************************
+ * Containers
+ */
 div.row-column-header-container,
 div.column-header-container,
 div.row-header-container,
-div.body-container{
+div.body-container {
   display: inline-block;
   margin: 0;
   overflow: hidden;
@@ -80,35 +43,125 @@ div.body-container{
 div.row-column-header-container,
 div.column-header-container,
 div.row-header-container,
-div.body-container{
+div.body-container {
   z-index: 10;
 }
-div.scroll-container{
+div.scroll-container {
   position: absolute;
   overflow: scroll;
   z-index: 0;
 }
-// div.scroll-container::-webkit-scrollbar{
-//     width: 12px;
-//     height: 12px;
-// }
-// div.scroll-container::-webkit-scrollbar-track{
-//     background-color: #eaeaea;
-// }
-// div.scroll-container::-webkit-scrollbar-thumb{
-//     background-color: #ccc;
-// }
-// div.scroll-container::-webkit-scrollbar-thumb:hover{
-//   background-color: #aaa;
-// }
-// div.scroll-container::-webkit-resizer{
-//   background-color: red;
-// }
-div.scroll-container-shim{
+div.scroll-container-shim {
   position: absolute;
   z-index: 0;
 }
-div.focus-rect{
+
+/**************************************
+ * table Grid
+ */
+table.grid-body {
+  position: absolute;
+  table-layout: fixed;
+  border-spacing: 0;
+  z-index: 10;
+  font-size: 0.80em;
+  // border-collapse: collapse;
+
+  colgroup {
+    col {
+      width: 100px;
+    }
+  }
+
+  tr {
+    td,
+    th {
+      box-sizing: border-box;
+      border-color: #ddd;
+      border-style: solid;
+      border-width: 0 1px 1px 0;
+      height: 25px;
+      outline: none;
+      overflow: hidden;
+      // padding: 2px;
+      // padding-left: 4px;
+      padding: 0px;
+      vertical-align: middle;
+      z-index: 10;
+      white-space: nowrap;
+      user-select: none;
+    }
+    th {
+      background-color: #eee;
+      border-color: #bbb;
+      font-weight: normal;
+    }
+    td {
+      input {
+        border-width: 0;
+        font-size: inherit;
+        margin: 0;
+        outline: none;
+        padding: 3px;
+        background-color: #ccc;
+        width: 100%;
+        height: 100%;
+      }
+      div {
+        box-sizing: border-box;
+        height: 100%;
+        padding: 3px;
+      }
+    }
+  }
+}
+
+/**************************************
+ * div Grid
+ */
+div.grid-body {
+  box-sizing: border-box;
+  display: table;
+  height: 100%;
+  width: 100%;
+  table-layout: fixed;
+  
+  div { // .grid-row
+    box-sizing: border-box;
+    display: table-row;
+    height: 25px;
+
+    div { //.grid-header-cell, .grid-cell
+      box-sizing: border-box;
+      display: table-cell;
+      width: 100px;
+      &:first-child {
+        width: 50px;
+      }
+      height: 100%;
+      border-style: solid;
+      border-color: #ddd;
+      border-width: 0 1px 1px 0;
+      font-size: 0.80em;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 0 3px;
+      user-select: none;
+      overflow: hidden;
+    }
+    div.grid-header-cell {
+      background-color: #eee;
+      border-color: #bbb;
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
+}
+
+/**************************************
+ * focus, selection & resizer
+ */
+div.focus-rect {
   padding: 0;
   margin: 0;
   border: 1px solid $selection-color;
@@ -116,7 +169,7 @@ div.focus-rect{
   z-index: 20;
   display: none;
 }
-div.select-rect{
+div.select-rect {
   background-color: $selection-color;
   position: absolute;
   opacity: 0.15;
@@ -125,7 +178,7 @@ div.select-rect{
   width: 0px;
   display: none;
 }
-div.select-rect-resizer{
+div.select-rect-resizer {
   background-color: $selection-color;
   border: 1px solid white;
   position: absolute;
@@ -136,7 +189,7 @@ div.select-rect-resizer{
   z-index: 20;
   display: none;
 }
-div.select-rect-border{
+div.select-rect-border {
   background-color: $selection-color;
   position: absolute;
   z-index: 20;
@@ -144,60 +197,28 @@ div.select-rect-border{
   width: 0px;
   display: none;
 }
-div.horizontal-resizer{
+div.horizontal-resizer, div.vertical-resizer {
   background-color: $selection-color;
   position: absolute;
+  z-index: 11;
+  opacity: 0.5;
+  display: none;
+  &:hover {
+    background-color: $selection-color;
+  }
+}
+div.horizontal-resizer {
   width: 6px;
-  z-index: 11;
   cursor: e-resize;
-  opacity: 0.5;
-  display: none;
 }
-div.vertical-resizer{
-  background-color: $selection-color;
-  position: absolute;
+div.vertical-resizer {
   height: 6px;
-  z-index: 11;
   cursor: s-resize;
-  opacity: 0.5;
-  display: none;
 }
-div.horizontal-resizer:hover, div.vertical-resizer:hover{
-  background-color: $selection-color;
-}
-div.horizontal-resizer-line{
+div.horizontal-resizer-line {
   background-color: $selection-color;
   position: absolute;
   width: 1px;
   z-index: 10;
   display: none;
-}
-
-div {
-  .tbody {
-    display: table;
-    height: 100%;
-    width: 100%;
-  }
-  .tr {
-    display: table-row;
-    height: 25px;
-    // width: 100%;
-  }
-  .th, .td {
-    display: table-cell;
-    height: 100%;
-    // width: 100px;
-    border-style: solid;
-    border-color: #ddd;
-    border-width: 0 1px 1px 0;
-    // border: 0 1p 1px 0;
-    font-size: 0.80em;
-  }
-  .th {
-    background-color: #eee;
-    border-color: #bbb;
-    text-align: center;
-    vertical-align: middle;
-  }
 }
