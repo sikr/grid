@@ -1,6 +1,7 @@
 import { IGridProperties } from './Types';
 import { GridRenderStyle } from './Types';
 import { Grid } from './Grid';
+import { Trace } from './Trace';
 import  data from '../testdata/data.1000.json';
 import  model from '../testdata/data.model.json';
 
@@ -9,7 +10,8 @@ import '../css/grid.scss';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  console.time('table');
+  let trc = new Trace('app');
+  trc.time('table');
 
   let body = document.getElementsByTagName('body')[0];
 
@@ -31,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     width: div.offsetWidth,
     height: div.offsetHeight,
     rows: 100,
-    columns: 20,
-    columnWidths: [40, 80, 200, 120, 80, 40, 80, 200, 120, 80, 40, 80, 200, 120, 80, 40, 80, 200, 120, 80],
+    columns: 30,
+    columnWidths: [40, 80, 200, 120, 80, 40, 80, 200, 120, 80, 40, 80, 200, 120, 80, 40, 80, 200, 120, 80, 40, 80, 200, 120, 80, 40, 80, 200, 120, 80],
     // columnWidths: [],
     firstVisibleColumn: 1,
     firstVisibleRow: 1,
@@ -60,5 +62,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   table.create();
   table.appendTo(div);
-  console.timeEnd('table');
+  trc.timeEnd('table');
 });

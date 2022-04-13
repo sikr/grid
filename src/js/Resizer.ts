@@ -1,5 +1,6 @@
 import { DragDrop as Dragdrop } from './DragDrop';
 import { Orientation } from './Types';
+import { Trace } from './Trace';
 
 export { Resizer };
 
@@ -34,8 +35,11 @@ class Resizer extends EventTarget {
   mousedownHandle: EventListener;
   mouseleaveHandle: EventListener;
 
+  trc: Trace;
+
   constructor(o: ResizerConfig) {
     super();
+    this.trc = new Trace('Resizer');
     this.active = false;
     this.delta = 0;
     this.dragdrop = new Dragdrop();
@@ -100,8 +104,8 @@ class Resizer extends EventTarget {
     if (this.orientation == Orientation.horizontal) {
       this.delta = this.dragdrop.getDeltaX();
       pos = this.dragdrop.getStartX() + this.dragdrop.getDeltaX() - this.overflowContainer.offsetLeft;
-      // console.log(`pos: ${pos}`);
-      // console.log(`deltaX = ${this.dragdrop.getDeltaX()}`);
+      // this.trc.log(`pos: ${pos}`);
+      // this.trc.log(`deltaX = ${this.dragdrop.getDeltaX()}`);
     }
     if (this.orientation == Orientation.vertical) {
       pos = this.dragdrop.getStartY() + this.dragdrop.getDeltaY() - this.overflowContainer.offsetTop;
@@ -155,7 +159,7 @@ class Resizer extends EventTarget {
     this.hide();
   }
   move(pos: number) {
-    // console.log('ResizeHandle move');
+    // this.trc.log('ResizeHandle move');
     if (this.orientation == Orientation.horizontal) {
       this.domRefHandle.style.left = `${pos - this.size[0] / 2}px`;
       this.domRefLine.style.left = `${pos}px`;
@@ -166,14 +170,14 @@ class Resizer extends EventTarget {
     }
   }
   hide() {
-    // console.log('ResizeHandle hide');
+    // this.trc.log('ResizeHandle hide');
     if (this.domRefHandle && this.domRefLine) {
       this.domRefHandle.style.display = 'none';
       this.domRefLine.style.display = 'none';
     }
   }
   show() {
-    // console.log('ResizeHandle show');
+    // this.trc.log('ResizeHandle show');
     this.domRefHandle.style.display = 'block';
     if (this.active) {
       this.domRefLine.style.display = 'block';

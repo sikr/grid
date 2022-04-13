@@ -1,4 +1,6 @@
+import { Trace } from './Trace';
 import { Utils } from './Utils';
+
 export { FocusRectangle };
 
 class FocusRectangle {
@@ -12,7 +14,15 @@ class FocusRectangle {
 
   private focusElement: HTMLElement | null;
 
+  trc: Trace;
+  utils: Utils;
+
   constructor(domRef: HTMLElement) {
+
+    this.trc = new Trace('FocusRectangle');
+
+    this.utils = Utils.getInstance();
+
     this.top = 0;
     this.left = 0;
     this.height = 0;
@@ -47,7 +57,7 @@ class FocusRectangle {
     if (element) {
       this.focusElement = element;
 
-      let position = Utils.getRect(this.focusElement, this.focusElement);
+      let position = this.utils.getRect(this.focusElement, this.focusElement);
 
       this.top = position.top - 1;
       this.left = position.left - 1;

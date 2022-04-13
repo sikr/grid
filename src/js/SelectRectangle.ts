@@ -1,4 +1,6 @@
+import { Trace } from './Trace';
 import { Utils } from './Utils';
+
 export { SelectRectangle };
 
 class SelectRectangle {
@@ -20,7 +22,13 @@ class SelectRectangle {
   private changed: boolean = false;
   private visible: boolean = false;
 
+  trc: Trace;
+  utils: Utils;
+
   constructor(domRef: HTMLElement) {
+    this.trc = new Trace('SelectRectangle');
+    this.utils = Utils.getInstance();
+
     this.ref = document.createElement('div');
     this.ref.id = 'select-rect';
     this.ref.className = 'select-rect';
@@ -54,7 +62,6 @@ class SelectRectangle {
   }
 
   update(from: HTMLElement | null, to: HTMLElement | null) {
-    console.log('update' + new Date().getMilliseconds())
     let changed = false;
     if (from || to) {
       if (from) {
@@ -66,7 +73,7 @@ class SelectRectangle {
         if (f !== this.getFrom()) {
           this.setFrom(f);
           changed = true;
-          console.log(`from = ${(<HTMLElement>this.from).id}`);
+          this.trc.log(`from = ${(<HTMLElement>this.from).id}`);
         }
       }
       if (to) {
@@ -78,23 +85,23 @@ class SelectRectangle {
         if (t !== this.getTo()) {
           this.setTo(t);
           changed = true;
-          console.log(`to = ${(<HTMLElement>this.to).id}`);
+          this.trc.log(`to = ${(<HTMLElement>this.to).id}`);
         }
       }
       else {
         this.setTo(this.getFrom());
-        console.log(`from = to`);
+        this.trc.log(`from = to`);
       }
     }
-  // console.log(`changed: ${changed}, from: ${from}, to: ${to}`);
+  // this.trc.log(`changed: ${changed}, from: ${from}, to: ${to}`);
   if (this.changed/* && this.getFrom() !== undefined && this.getTo() !== undefined*/) {
   // if (this.getFrom() !== undefined && this.getTo() !== undefined) {
     from = this.getFrom();
     to = this.getTo();
     
     if (from && to) {
-      // console.log(`from = ${from.id}, to = ${to.id}`);
-      var position = Utils.getRect(from, to);
+      // this.trc.log(`from = ${from.id}, to = ${to.id}`);
+      var position = this.utils.getRect(from, to);
 
       this.top = position.top;
       this.left = position.left;
@@ -166,12 +173,12 @@ setFrom(from: HTMLElement | null) {
   if (from !== this.getFrom()) {
     this.from = from;
     this.changed = true;
-    if (from) console.log(`setFrom: ${from.id}, changed`);
+    if (from) this.trc.log(`setFrom: ${from.id}, changed`);
   }
   else {
     this.changed = false;
   }
-  // console.log(`from = ${this.from.id}, changed = ${this.changed}`);
+  // this.trc.log(`from = ${this.from.id}, changed = ${this.changed}`);
 }
 getTo(): HTMLElement | null {
   return this.to;
@@ -184,7 +191,7 @@ setTo(to: HTMLElement | null) {
   else {
     this.changed = false;
   }
-  // console.log(`to = ${this.to.id}, changed = ${this.changed}`);
+  // this.trc.log(`to = ${this.to.id}, changed = ${this.changed}`);
 }
 setScrollPosition(position: {top: number, left: number}) {
   this.scrollTop = position.top;
