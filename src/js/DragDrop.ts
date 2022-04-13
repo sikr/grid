@@ -1,4 +1,6 @@
+import { Trace } from './Trace';
 import { Utils } from './Utils';
+
 export { DragDrop };
 
 class DragDrop extends EventTarget {
@@ -13,8 +15,16 @@ class DragDrop extends EventTarget {
   mousemoveHandlerRef: EventListener | null;
   mouseupHandlerRef: EventListener | null;
 
+  trc: Trace;
+  utils: Utils;
+
   constructor() {
     super();
+
+    this.trc = new Trace('DragDrop');
+
+    this.utils = Utils.getInstance()
+
     this.domRef = null;
     this.deltaX = -1;
     this.deltaY = -1;
@@ -40,7 +50,7 @@ class DragDrop extends EventTarget {
   }
 
   startSession(event: MouseEvent, nodeName: string | null) {
-    this.domRef = Utils.getCell(event, nodeName);
+    this.domRef = this.utils.getCell(event, nodeName);
     this.startX = event.clientX;
     this.startY = event.clientY;
 

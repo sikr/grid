@@ -1,3 +1,5 @@
+import { Trace } from './Trace';
+
 export { Utils };
 
 type Rect = {
@@ -8,7 +10,21 @@ type Rect = {
 }
 
 class Utils {
-  static getRect(sourceTarget: HTMLElement, currentTarget: HTMLElement):Rect {
+  private static instance: Utils;
+  private trc;
+
+  private constructor() {
+    this.trc = new Trace('Utils');
+  }
+
+  static getInstance(): Utils {
+    if (!Utils.instance) {
+      Utils.instance = new Utils()
+    }
+    return Utils.instance;
+  }
+
+  getRect(sourceTarget: HTMLElement, currentTarget: HTMLElement):Rect {
     let rect: Rect = {
       top: -1,
       left: -1,
@@ -37,11 +53,12 @@ class Utils {
       rect.left = curPos.left;
       rect.width = srcPos.left - curPos.left + sourceTarget.clientWidth;
     }
-    //    console.log('srcPos.left: ' + srcPos.left + ', curPos.left: ' + curPos.left + ', srcPos.width: ' + sourceTarget[0].clientWidth + ', curPos.width: ' + currentTarget[0].clientWidth);
-    //  console.log('top: ' + rect.top + ', left: ' + rect.left + ', height: ' + rect.height + ', width: ' + rect.width);
+    // this.trc.log('srcPos.left: ' + srcPos.left + ', curPos.left: ' + curPos.left + ', srcPos.width: ' + sourceTarget[0].clientWidth + ', curPos.width: ' + currentTarget[0].clientWidth);
+    //  this.trc.log('top: ' + rect.top + ', left: ' + rect.left + ', height: ' + rect.height + ', width: ' + rect.width);
     return rect;
   };
-  static getCell(event: Event, nodeName: string | null): HTMLElement | null {
+
+  getCell(event: Event, nodeName: string | null): HTMLElement | null {
     let i = 0;
     let { target  } = event;
     if (nodeName) {
@@ -55,11 +72,11 @@ class Utils {
     return (target as HTMLElement);
   }
 
-  static arraySum(array: number[]):Number {
+  arraySum(array: number[]):Number {
     return array.reduce(function (pv, cv) { return pv + cv; }, 0);
   }
 
-  static arrayRangeSum(array: number[], start: number, stop: number):number {
+  arrayRangeSum(array: number[], start: number, stop: number):number {
     var _rv = 0;
     for (var i = start; i <= stop; i++) {
       _rv += array[i];
@@ -67,7 +84,7 @@ class Utils {
     return _rv;
   };
 
-  static arrayProgressiveSum(array: number[]): number[] {
+  arrayProgressiveSum(array: number[]): number[] {
     var _rv: number[] = [];
     var s = 0;
     for (var i = 0; i < array.length; i++) {
@@ -77,17 +94,11 @@ class Utils {
     return _rv;
   };
 
-  static arrayFill(value: number, count: number): number[] {
+  arrayFill(value: number, count: number): number[] {
     var _rv: number[] = [];
     for (var i = 0; i < count; i++) {
       _rv.push(value);
     }
     return _rv;
   };
-  static assert(cond: boolean, msg: string) {
-    if (cond) {
-      // console.error(msg) 
-      throw(new Error(msg))
-    }
-  }
 }
