@@ -82,7 +82,9 @@ class Grid implements IGridMethods {
       // width: 0,
       columnPositions: null!,
       visibleRows: 0,
-      renderStyle: o.renderStyle || GridRenderStyle.table
+      renderStyle: o.renderStyle || GridRenderStyle.table,
+      data: o.data,
+      model: o.model
     };
 
     let columnPositions: number[] = Utils.arrayProgressiveSum(this.config.columnWidths);
@@ -325,7 +327,7 @@ class Grid implements IGridMethods {
   }
   createCellHTML(o: IGridFragment, row: number, column: number): HTMLElement {
     let enumerate: number | string = 1;
-    let enumerationText = '';
+    let textContent = '';
     let cell;
     let id;
     let div;
@@ -333,11 +335,17 @@ class Grid implements IGridMethods {
     // number or chars for row column header
     if (typeof o.enumerate == 'number') {
       enumerate = row;
-      (enumerationText = (enumerate++).toString()).toString();
+      (textContent = (enumerate++).toString()).toString();
     }
     else if (typeof o.enumerate == 'string') {
       enumerate = o.enumerate.charCodeAt(0)+column-1;
-      enumerationText = String.fromCharCode((<number>enumerate));
+      textContent = String.fromCharCode((<number>enumerate));
+    }
+    else if (row > 0) {
+      let dataRow = this.config.data[row-1 as keyof typeof this.config.data];
+      let key = this.config.model[column];
+      textContent = dataRow[key]
+      this.config.data
     }
 
     if (this.config.renderStyle == GridRenderStyle.table) {
@@ -357,12 +365,12 @@ class Grid implements IGridMethods {
     cell.setAttribute('tabindex', '0');
     if (this.config.renderStyle === GridRenderStyle.table) {
       div = document.createElement('div');
-      div.innerText = enumerationText;
+      div.innerText = textContent;
       div.setAttribute('draggable', 'false');
       cell.append(div)
     }
     else {
-      cell.innerText = enumerationText;
+      cell.innerText = textContent;
     }
     if (o.focusHandler) {
       cell.addEventListener('focus', o.focusHandler.bind(this));

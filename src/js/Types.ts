@@ -37,6 +37,10 @@ export interface IGridProperties {
   scrollToSnap: Boolean;
   // render using HTML table or div
   renderStyle: GridRenderStyle;
+  // data
+  data: object;
+  // data model
+  model: string[];
 }
 
 // internal table properties struct
