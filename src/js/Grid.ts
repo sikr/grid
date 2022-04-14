@@ -92,15 +92,6 @@ class Grid implements IGridMethods {
       data: o.data,
       model: o.model
     };
-
-    // this.trc.log('log');
-    // this.trc.info('info');
-    // this.trc.warn('warn');
-    // this.trc.error('error');
-    // this.trc.assert(!this.config, {foo: 'bar', err: 'baz'});
-    // this.trc.table(this.config, ['firstVisibleRow', 'firstVisibleCoolumn']);
-    // this.trc.trace();
-
     let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
