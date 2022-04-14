@@ -1,9 +1,9 @@
 $selection-color: #4488FF;
-$selection-color: #3472dc;
 $selection-color: green;
 $selection-color: deeppink;
 $selection-color: darkorange;
 $selection-color: purple;
+$selection-color: #3472dc;
 
 /**************************************
  * Global attributes
@@ -13,8 +13,8 @@ html {
   // font-family:Arial, Helvetica, sans-serif;
 }
 body {
-  width: auto;
   height: auto;
+  width: auto;
 }
 
 /**************************************
@@ -47,8 +47,8 @@ div.body-container {
   z-index: 10;
 }
 div.scroll-container {
-  position: absolute;
   overflow: scroll;
+  position: absolute;
   z-index: 0;
 }
 div.scroll-container-shim {
@@ -60,12 +60,12 @@ div.scroll-container-shim {
  * table Grid
  */
 table.grid-table {
+  // border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.80em;
   position: absolute;
   table-layout: fixed;
-  border-spacing: 0;
   z-index: 10;
-  font-size: 0.80em;
-  // border-collapse: collapse;
 
   colgroup {
     col {
@@ -76,19 +76,18 @@ table.grid-table {
     tr {
       td,
       th {
-        box-sizing: border-box;
         border-color: #ddd;
         border-style: solid;
         border-width: 0 1px 1px 0;
+        box-sizing: border-box;
         height: 25px;
         outline: none;
+        outline: none;
         overflow: hidden;
-        // padding: 2px;
-        // padding-left: 4px;
         padding: 0px;
+        user-select: none;
         vertical-align: middle;
         white-space: nowrap;
-        user-select: none;
       }
       th {
         background-color: #eee;
@@ -97,14 +96,14 @@ table.grid-table {
       }
       td {
         input {
+          background-color: #ccc;
           border-width: 0;
           font-size: inherit;
+          height: 100%;
           margin: 0;
           outline: none;
           padding: 3px;
-          background-color: #ccc;
           width: 100%;
-          height: 100%;
         }
         div {
           box-sizing: border-box;
@@ -123,8 +122,8 @@ div.grid-table {
   box-sizing: border-box;
   display: table;
   height: 100%;
-  width: 100%;
   table-layout: fixed;
+  width: 100%;
   z-index: 10;
   div { // grid-body
     display: table-row-group;
@@ -135,23 +134,24 @@ div.grid-table {
       height: 25px;
   
       div { //.grid-header-cell, .grid-cell
-        position: relative;
-        box-sizing: border-box;
-        display: table-cell;
-        width: 100px;
         &:first-child {
           width: 50px;
         }
-        height: 100%;
-        border-style: solid;
         border-color: #ddd;
+        border-style: solid;
         border-width: 0 1px 1px 0;
+        box-sizing: border-box;
+        display: table-cell;
         font-size: 0.80em;
-        white-space: nowrap;
-        vertical-align: middle;
-        padding: 0 3px;
-        user-select: none;
+        height: 100%;
+        outline: none;
         overflow: hidden;
+        padding: 0 3px;
+        position: relative;
+        user-select: none;
+        vertical-align: middle;
+        white-space: nowrap;
+        width: 100px;
         z-index: 10;
       }
       div.grid-header-cell {
@@ -168,63 +168,63 @@ div.grid-table {
  * focus, selection & resizer
  */
 div.focus-rect {
-  padding: 0;
-  margin: 0;
   border: 1px solid $selection-color;
+  display: none;
+  margin: 0;
+  padding: 0;
   position: absolute;
   z-index: 20;
-  display: none;
 }
 div.select-rect {
   background-color: $selection-color;
-  position: absolute;
-  opacity: 0.15;
-  z-index: 8;
-  height: 0px;
-  width: 0px;
   display: none;
+  height: 0px;
+  opacity: 0.15;
+  position: absolute;
+  width: 0px;
+  z-index: 8;
 }
 div.select-rect-resizer {
   background-color: $selection-color;
   border: 1px solid white;
-  position: absolute;
-  display: block;
-  width: 5px;
-  height: 5px;
   cursor: crosshair;
-  z-index: 20;
+  display: block;
   display: none;
+  height: 5px;
+  position: absolute;
+  width: 5px;
+  z-index: 20;
 }
 div.select-rect-border {
   background-color: $selection-color;
-  position: absolute;
-  z-index: 20;
-  height: 0px;
-  width: 0px;
   display: none;
+  height: 0px;
+  position: absolute;
+  width: 0px;
+  z-index: 20;
 }
 div.horizontal-resizer, div.vertical-resizer {
-  background-color: $selection-color;
-  position: absolute;
-  z-index: 11;
-  opacity: 0.5;
-  display: none;
   &:hover {
     background-color: $selection-color;
   }
+  background-color: $selection-color;
+  display: none;
+  opacity: 0.5;
+  position: absolute;
+  z-index: 11;
 }
 div.horizontal-resizer {
-  width: 6px;
   cursor: e-resize;
+  width: 6px;
 }
 div.vertical-resizer {
-  height: 6px;
   cursor: s-resize;
+  height: 6px;
 }
 div.horizontal-resizer-line {
   background-color: $selection-color;
+  display: none;
   position: absolute;
   width: 1px;
   z-index: 10;
-  display: none;
 }

@@ -1,3 +1,9 @@
+export enum TraceLevel {
+  'error' = 0,
+  'warn',
+  'info',
+  'verbose'
+}
 export class Trace {
 
   private color: string;
@@ -6,6 +12,8 @@ export class Trace {
   private static predefinedColors: string[] = ['violet', 'cyan', 'limegreen', 'deepskyblue', 'darkgoldenrod', 'chocolate', 'gold'];
   private static components: string[] = [];
   private static colors = 0;
+
+  private static level: TraceLevel = 0;
 
   constructor(component: string, color?: string) {
     let existIndex = Trace.components.indexOf(component);
@@ -28,32 +36,51 @@ export class Trace {
     }
     this.component = component;
   }
+  setLevel(level: TraceLevel) {
+    Trace.level = level
+  }
   public assert(...args: any) {
-    args.splice(1, 0, this.component);
-    console.assert(...args);
+    if (Trace.level >= TraceLevel.verbose) {
+      args.splice(1, 0, this.component);
+      console.assert(...args);
+    }
   }
   public error(msg: string) {
     console.error(`${this.component}: ${msg}`);
   }
   public info(msg: any) {
-    console.info(`%c${this.component}: ${msg}`, `color: ${this.color};`);
+    if (Trace.level >= TraceLevel.info) {
+      console.info(`%c${this.component}: ${msg}`, `color: ${this.color};`);
+    }
   }
   public log(msg: any) {
-    console.log(`%c${this.component}: ${msg}`, `color: ${this.color};`)
+    if (Trace.level >= TraceLevel.verbose) {
+      console.log(`%c${this.component}: ${msg}`, `color: ${this.color};`)
+    }
   }
   public table(...args: any) {
-    console.table(...args);
+    if (Trace.level >= TraceLevel.verbose) {
+      console.table(...args);
+    }
   }
   public time(label: string) {
-    console.time(`${this.component} - ${label}`);
+    if (Trace.level >= TraceLevel.verbose) {
+      console.time(`${this.component} - ${label}`);
+    }
   }
   public timeEnd(label: string) {
-    console.timeEnd(`${this.component} - ${label}`);
+    if (Trace.level >= TraceLevel.verbose) {
+      console.timeEnd(`${this.component} - ${label}`);
+    }
   }
   public trace(...args: any) {
-    console.trace(this.component, ...args);
+    if (Trace.level >= TraceLevel.verbose) {
+      console.trace(this.component, ...args);
+    }
   }
   public warn(msg: string) {
-    console.warn(`${this.component}: ${msg}`);
+    if (Trace.level >= TraceLevel.warn) {
+      console.warn(`${this.component}: ${msg}`);
+    }
   }
 }
