@@ -2,6 +2,7 @@ import { IGridProperties } from './Types';
 import { GridRenderStyle } from './Types';
 import { Grid } from './Grid';
 import { Trace } from './Trace';
+import { TraceLevel } from './Trace';
 import  data from '../testdata/data.1000.json';
 import  model from '../testdata/data.model.json';
 
@@ -11,6 +12,8 @@ import '../css/grid.scss';
 document.addEventListener('DOMContentLoaded', () => {
 
   let trc = new Trace('app');
+  trc.setLevel(TraceLevel.verbose);
+
   trc.time('table');
 
   let body = document.getElementsByTagName('body')[0];
