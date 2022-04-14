@@ -156,8 +156,8 @@ class Grid implements IGridMethods {
     // this.t.c.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     window.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
-    this.t.bg.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
-    this.t.bg.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
+    this.t.bc.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
+    this.t.bc.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
   }
   create() {
     this.init();
@@ -785,11 +785,11 @@ class Grid implements IGridMethods {
   }
   // setFocusSilently() {
   //   setTimeout(() => {
-  //     this.t.bg.removeEventListener('focus', <EventListener>this.focusHandlerRef);
+  //     this.t.bc.removeEventListener('focus', <EventListener>this.focusHandlerRef);
   //     if (this.focusElement) {
   //       this.focusElement.focus();
   //     }
-  //     this.t.bg.addEventListener('focus', <EventListener>this.focusHandlerRef);
+  //     this.t.bc.addEventListener('focus', <EventListener>this.focusHandlerRef);
   //   }, 0);
   // }
 }
