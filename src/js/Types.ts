@@ -102,7 +102,27 @@ export interface IGridSkeleton {
     rhc: IGridContainer,    // row header container
       rhg: IGridContainer,  // row header grid
     bc: IGridContainer,     // body container
-      bg: IGridContainer,   // body grid
+      // ltc: IGridContainer,  // left top body container
+      //   ltg: IGridContainer,// left top body grid
+      // ctc: IGridContainer,  // center top body container
+      //   ctg: IGridContainer,// center top body grid
+      // rtc: IGridContainer,  // right top body container
+      //   rtg: IGridContainer,// right top body grid
+
+      // lmc: IGridContainer,  // left middle body container
+      //   lmg: IGridContainer,// left middle body grid
+      cmc: IGridContainer,  // center middle body container
+        cmg: IGridContainer,// center middle body grid
+      //   bg: IGridContainer, // body grid; will be replaced by cmc>cmg
+      // rmc: IGridContainer,  // right middle body container
+      //   rmg: IGridContainer,// right middle body grid
+
+      // lbc: IGridContainer,  // left bottom body container
+      //   lbg: IGridContainer,// left bottom body grid
+      // cbc: IGridContainer,  // center bottom body container
+      //   cbg: IGridContainer,// center bottom body grid
+      // rbc: IGridContainer,  // right bottom body container
+      //   rbg: IGridContainer,// right bottom body grid
     sc: IGridContainer,     // scroll container
       scs: IGridContainer   // scroll container shim
 };

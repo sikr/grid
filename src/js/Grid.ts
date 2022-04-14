@@ -105,7 +105,8 @@ class Grid implements IGridMethods {
         rhc: null!,
           rhg: null!,
         bc: null!,
-          bg: null!,
+          cmc: null!,
+            cmg: null!,
         sc: null!,
           scs: null!
     };
@@ -242,6 +243,16 @@ class Grid implements IGridMethods {
     .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
     .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
     .appendTo(this.t.c.getDomRef());
+
+    this.t.cmc = new GridContainer()
+    .setId(`${this.config.id}-center-middle-body-container`)
+    .addClassName(`center-middle-body-container`)
+    .setTop(this.config.rowHeight)
+    .setLeft(this.config.rowHeaderWidth)
+    // .setHeight(this.config.visibleRows * this.config.rowHeight)
+    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
+    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
+    .appendTo(this.t.bc.getDomRef());
 
     this.t.sc = new GridContainer()
     .setId(`${this.config.id}-scroll-container`)
@@ -452,7 +463,7 @@ class Grid implements IGridMethods {
     });
     this.t.rhc.append(this.t.rhg.getDomRef());
 
-    this.t.bg = this.createGridFragment({
+    this.t.cmg = this.createGridFragment({
       id: 'body',
       startRow: 1,
       stopRow: this.config.rows,
@@ -466,7 +477,7 @@ class Grid implements IGridMethods {
       enumerate: null,
       focusHandler: this.focusHandler
     });
-    this.t.bc.append(this.t.bg.getDomRef());
+    this.t.cmc.append(this.t.cmg.getDomRef());
   }
   getCell(row: number, column: number): HTMLElement | null {
     // ...
