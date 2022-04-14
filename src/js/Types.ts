@@ -89,7 +89,7 @@ export interface IGridFragment {
   cellClass: string;
   cellIdPrefix: string;
   enumerate: number | string | null;
-  focusHandler: Function | null;
+  focusHandlerRef: Function | null;
 }
 
 // html container skeleton

@@ -70,14 +70,14 @@ class Grid implements IGridMethods {
 
   static scrollTimerId: number;
 
-  scrollHandlerRef: EventListener | null;
-  resizeHandlerRef: EventListener | null;
-  mousewheelHandlerRef: EventListener | null;
-  keydownHandlerRef: EventListener | null;
-  mousedownHandlerRef: EventListener | null;
-  selectDragHandlerRef: EventListener | null;
-  selectReleaseHandlerRef: EventListener | null;
-  focusHandlerRef: EventListener | null;
+  scrollHandlerRef: EventListener | null = null;
+  resizeHandlerRef: EventListener | null = null;
+  mousewheelHandlerRef: EventListener | null = null;
+  keydownHandlerRef: EventListener | null = null;
+  mousedownHandlerRef: EventListener | null = null;
+  selectDragHandlerRef: EventListener | null = null;
+  selectReleaseHandlerRef: EventListener | null = null;
+  focusHandlerRef: EventListener | null = null;
 
   trc: Trace;
   utils: Utils;
@@ -88,16 +88,6 @@ class Grid implements IGridMethods {
     this.trc = new Trace('Grid');
     this.utils = Utils.getInstance();
     
-    // References to the event listeners
-    this.scrollHandlerRef = null;
-    this.resizeHandlerRef = null;
-    this.mousewheelHandlerRef = null;
-    this.keydownHandlerRef = null;
-    this.mousedownHandlerRef = null;
-    this.selectDragHandlerRef = null;
-    this.selectReleaseHandlerRef = null;
-    this.focusHandlerRef = null;
-
     this.config = {
       columns: o.columns || 20,
       columnWidths: o.columnWidths.length > 0? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
@@ -177,6 +167,7 @@ class Grid implements IGridMethods {
     this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
     this.t.bc.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
     this.t.bc.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
+    this.t.bc.addEventListener('focus', <EventListener>this.focusHandlerRef);
   }
   create() {
     this.init();
@@ -427,8 +418,8 @@ class Grid implements IGridMethods {
     else {
       cell.innerText = textContent;
     }
-    if (o.focusHandler) {
-      cell.addEventListener('focus', o.focusHandler.bind(this));
+    if (o.focusHandlerRef) {
+      cell.addEventListener('focus', <EventListener>o.focusHandlerRef);
     }
     return cell;
   }
@@ -445,7 +436,7 @@ class Grid implements IGridMethods {
       cellClass: '',
       cellIdPrefix: 'rc',
       enumerate: null,
-      focusHandler: null
+      focusHandlerRef: null
     });
     this.t.rchc.append(this.t.rchg.getDomRef());
 
@@ -461,7 +452,7 @@ class Grid implements IGridMethods {
       cellClass: 'foo',
       cellIdPrefix: 'c',
       enumerate: 'A',
-      focusHandler: null
+      focusHandlerRef: null
     });
     this.t.chc.append(this.t.chg.getDomRef());
 
@@ -477,7 +468,7 @@ class Grid implements IGridMethods {
       cellClass: 'bar',
       cellIdPrefix: 'r',
       enumerate: 1,
-      focusHandler: null
+      focusHandlerRef: null
     });
     this.t.rhc.append(this.t.rhg.getDomRef());
 
@@ -493,7 +484,7 @@ class Grid implements IGridMethods {
       cellClass: '',
       cellIdPrefix: 'g',
       enumerate: null,
-      focusHandler: this.focusHandler
+      focusHandlerRef: this.focusHandlerRef
     });
     this.t.cmc.append(this.t.cmg.getDomRef());
   }
