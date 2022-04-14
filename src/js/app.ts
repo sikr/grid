@@ -13,23 +13,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let trc = new Trace('app');
   trc.setLevel(TraceLevel.verbose);
-
   trc.time('table');
 
-  let body = document.getElementsByTagName('body')[0];
+  const enum RenderType {
+    'container',
+    'fullscreen'
+  }
+  let renderType: RenderType = RenderType.container;
 
+  let body = document.getElementsByTagName('body')[0];
   let div = document.createElement('div');
-  div.style.position = 'fixed';
-  div.style.left = '0';
-  div.style.top = '0';
-  div.style.width = '100%';
-  div.style.height = '100%';
-  // div.style.left = '100px';
-  // div.style.top = '100px';
-  // div.style.width = '500px';
-  // div.style.height = '488px';
-  // div.style.border = '1px solid blue';
-  // div.style.backgroundColor = 'lightblue';
+  
+  if (<RenderType>renderType == RenderType.container) {
+    div.style.position = 'absolute';
+    div.style.left = '100px';
+    div.style.top = '100px';
+    div.style.width = '500px';
+    div.style.height = '488px';
+    // div.style.border = '1px solid blue';
+    // div.style.backgroundColor = 'lightblue';
+  }
+  else if (<RenderType>renderType == RenderType.fullscreen) {
+    div.style.position = 'fixed';
+    div.style.left = '0';
+    div.style.top = '0';
+    div.style.width = '100%';
+    div.style.height = '100%';
+  }
   body.append(div)
 
   let tableConfig: IGridProperties = {
