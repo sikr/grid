@@ -23,7 +23,39 @@ export { Grid };
 
 class Grid implements IGridMethods {
 
-  private t: IGridSkeleton;
+
+  private t: IGridSkeleton = {
+    c: null!,
+      rchc: null!,
+        rchg: null!,
+      chc: null!,
+        chg: null!,
+      rhc: null!,
+        rhg: null!,
+      bc: null!,
+        // ltc: null!
+        //   ltg: null!
+        // ctc: null!
+        //   ctg: null!
+        // rtc: null!
+        //   rtg: null!
+
+        // lmc: null!
+        //   lmg: null!
+        cmc: null!,
+          cmg: null!,
+        // rmc: mull!,
+        //   rmg: mull!,
+
+        // lbc: mull!,
+        //   lbg: mull!,
+        // cbc: mull!,
+        //   cbg: mull!,
+        // rbc: mull!,
+        //   rbg: mull!,
+      sc: null!,
+        scs: null!
+  };
 
   private config: IGridPropertiesInternal;
 
@@ -38,14 +70,14 @@ class Grid implements IGridMethods {
 
   static scrollTimerId: number;
 
-  scrollHandlerRef: EventListener | null;
-  resizeHandlerRef: EventListener | null;
-  mousewheelHandlerRef: EventListener | null;
-  keydownHandlerRef: EventListener | null;
-  mousedownHandlerRef: EventListener | null;
-  selectDragHandlerRef: EventListener | null;
-  selectReleaseHandlerRef: EventListener | null;
-  focusHandlerRef: EventListener | null;
+  scrollHandlerRef: EventListener | null = null;
+  resizeHandlerRef: EventListener | null = null;
+  mousewheelHandlerRef: EventListener | null = null;
+  keydownHandlerRef: EventListener | null = null;
+  mousedownHandlerRef: EventListener | null = null;
+  selectDragHandlerRef: EventListener | null = null;
+  selectReleaseHandlerRef: EventListener | null = null;
+  focusHandlerRef: EventListener | null = null;
 
   trc: Trace;
   utils: Utils;
@@ -56,16 +88,6 @@ class Grid implements IGridMethods {
     this.trc = new Trace('Grid');
     this.utils = Utils.getInstance();
     
-    // References to the event listeners
-    this.scrollHandlerRef = null;
-    this.resizeHandlerRef = null;
-    this.mousewheelHandlerRef = null;
-    this.keydownHandlerRef = null;
-    this.mousedownHandlerRef = null;
-    this.selectDragHandlerRef = null;
-    this.selectReleaseHandlerRef = null;
-    this.focusHandlerRef = null;
-
     this.config = {
       columns: o.columns || 20,
       columnWidths: o.columnWidths.length > 0? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
@@ -96,19 +118,6 @@ class Grid implements IGridMethods {
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
 
-    this.t = {
-      c: null!,
-        rchc: null!,
-          rchg: null!,
-        chc: null!,
-          chg: null!,
-        rhc: null!,
-          rhg: null!,
-        bc: null!,
-          bg: null!,
-        sc: null!,
-          scs: null!
-    };
     this.dragdrop = new DragDrop();
     this.focusRect = null!;
     this.focusElement = null!;
@@ -156,8 +165,9 @@ class Grid implements IGridMethods {
     // this.t.c.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     window.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
-    this.t.bg.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
-    this.t.bg.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
+    this.t.bc.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
+    this.t.bc.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
+    this.t.bc.addEventListener('focus', <EventListener>this.focusHandlerRef);
   }
   create() {
     this.init();
@@ -242,6 +252,16 @@ class Grid implements IGridMethods {
     .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
     .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
     .appendTo(this.t.c.getDomRef());
+
+    this.t.cmc = new GridContainer()
+    .setId(`${this.config.id}-center-middle-body-container`)
+    .addClassName(`center-middle-body-container`)
+    .setTop(this.config.rowHeight)
+    .setLeft(this.config.rowHeaderWidth)
+    // .setHeight(this.config.visibleRows * this.config.rowHeight)
+    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
+    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
+    .appendTo(this.t.bc.getDomRef());
 
     this.t.sc = new GridContainer()
     .setId(`${this.config.id}-scroll-container`)
@@ -398,8 +418,8 @@ class Grid implements IGridMethods {
     else {
       cell.innerText = textContent;
     }
-    if (o.focusHandler) {
-      cell.addEventListener('focus', o.focusHandler.bind(this));
+    if (o.focusHandlerRef) {
+      cell.addEventListener('focus', <EventListener>o.focusHandlerRef);
     }
     return cell;
   }
@@ -416,7 +436,7 @@ class Grid implements IGridMethods {
       cellClass: '',
       cellIdPrefix: 'rc',
       enumerate: null,
-      focusHandler: null
+      focusHandlerRef: null
     });
     this.t.rchc.append(this.t.rchg.getDomRef());
 
@@ -432,7 +452,7 @@ class Grid implements IGridMethods {
       cellClass: 'foo',
       cellIdPrefix: 'c',
       enumerate: 'A',
-      focusHandler: null
+      focusHandlerRef: null
     });
     this.t.chc.append(this.t.chg.getDomRef());
 
@@ -448,11 +468,11 @@ class Grid implements IGridMethods {
       cellClass: 'bar',
       cellIdPrefix: 'r',
       enumerate: 1,
-      focusHandler: null
+      focusHandlerRef: null
     });
     this.t.rhc.append(this.t.rhg.getDomRef());
 
-    this.t.bg = this.createGridFragment({
+    this.t.cmg = this.createGridFragment({
       id: 'body',
       startRow: 1,
       stopRow: this.config.rows,
@@ -464,9 +484,9 @@ class Grid implements IGridMethods {
       cellClass: '',
       cellIdPrefix: 'g',
       enumerate: null,
-      focusHandler: this.focusHandler
+      focusHandlerRef: this.focusHandlerRef
     });
-    this.t.bc.append(this.t.bg.getDomRef());
+    this.t.cmc.append(this.t.cmg.getDomRef());
   }
   getCell(row: number, column: number): HTMLElement | null {
     // ...
@@ -785,11 +805,11 @@ class Grid implements IGridMethods {
   }
   // setFocusSilently() {
   //   setTimeout(() => {
-  //     this.t.bg.removeEventListener('focus', <EventListener>this.focusHandlerRef);
+  //     this.t.bc.removeEventListener('focus', <EventListener>this.focusHandlerRef);
   //     if (this.focusElement) {
   //       this.focusElement.focus();
   //     }
-  //     this.t.bg.addEventListener('focus', <EventListener>this.focusHandlerRef);
+  //     this.t.bc.addEventListener('focus', <EventListener>this.focusHandlerRef);
   //   }, 0);
   // }
 }
