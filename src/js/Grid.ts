@@ -23,7 +23,39 @@ export { Grid };
 
 class Grid implements IGridMethods {
 
-  private t: IGridSkeleton;
+
+  private t: IGridSkeleton = {
+    c: null!,
+      rchc: null!,
+        rchg: null!,
+      chc: null!,
+        chg: null!,
+      rhc: null!,
+        rhg: null!,
+      bc: null!,
+        // ltc: null!
+        //   ltg: null!
+        // ctc: null!
+        //   ctg: null!
+        // rtc: null!
+        //   rtg: null!
+
+        // lmc: null!
+        //   lmg: null!
+        cmc: null!,
+          cmg: null!,
+        // rmc: mull!,
+        //   rmg: mull!,
+
+        // lbc: mull!,
+        //   lbg: mull!,
+        // cbc: mull!,
+        //   cbg: mull!,
+        // rbc: mull!,
+        //   rbg: mull!,
+      sc: null!,
+        scs: null!
+  };
 
   private config: IGridPropertiesInternal;
 
@@ -96,20 +128,6 @@ class Grid implements IGridMethods {
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
 
-    this.t = {
-      c: null!,
-        rchc: null!,
-          rchg: null!,
-        chc: null!,
-          chg: null!,
-        rhc: null!,
-          rhg: null!,
-        bc: null!,
-          cmc: null!,
-            cmg: null!,
-        sc: null!,
-          scs: null!
-    };
     this.dragdrop = new DragDrop();
     this.focusRect = null!;
     this.focusElement = null!;
