@@ -6,7 +6,7 @@ import { TraceLevel } from './Trace';
 import  data from '../testdata/data.1000.json';
 import  model from '../testdata/data.model.json';
 
-import '../css/grid.scss';
+import '../scss/grid.scss';
 
 
 document.addEventListener('DOMContentLoaded', () => {
