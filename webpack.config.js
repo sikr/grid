@@ -3,14 +3,14 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const path = require('path');
 module.exports = {
   mode: 'development',
-  entry: {app : './src/js/app.ts'},
+  entry: {app : './src/ts/app.ts'},
   devtool: 'inline-source-map',
   module: {
     rules: [
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        include: [path.resolve(__dirname, 'src/js')]
+        include: [path.resolve(__dirname, 'src/ts')]
       },
       {
         test: /\.scss$/,
