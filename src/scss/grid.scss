@@ -228,3 +228,10 @@ div.horizontal-resizer-line {
   width: 1px;
   z-index: 10;
 }
+div.vertical-resizer-line {
+  background-color: $selection-color;
+  display: none;
+  position: absolute;
+  height: 1px;
+  z-index: 10;
+}
