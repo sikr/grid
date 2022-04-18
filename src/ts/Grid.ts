@@ -1,7 +1,7 @@
 import { DragDrop }               from './DragDrop';
 import { FocusRectangle }         from './FocusRectangle';
 import { SelectRectangle }        from './SelectRectangle';
-import { Resizer, ResizerConfig } from './Resizer';
+import { Resizer }                from './Resizer';
 import { Trace }                  from './Trace';
 import { Utils }                  from './Utils';
 // import { GridKeyboard } from './GridKeyboard.js';
@@ -184,25 +184,16 @@ class Grid implements IGridMethods {
     this.focusRect = new FocusRectangle(this.t.bc.getDomRef());
   }
   createResizer() {
-    let resizerConfig: ResizerConfig = {
-      orientation: Orientation.horizontal,
-      ref: this.t.c.getDomRef(),
-      start: this.t.c.getOffsetLeft() + this.config.rowHeaderWidth,
-      stop: this.t.c.getOffsetLeft() + this.config.rowHeaderWidth + this.t.bc.getWidth(),
-      // id: 'resi',
-      size: [6, this.config.rowHeight],
-      resizerContainer: this.t.chc.getDomRef(),
-      overflowContainer: this.t.c.getDomRef(),
-      scrollContainer: this.t.sc.getDomRef(),
-      positions: this.config.columnPositions,
-      // columns: this.config.columns
-    }
-    let resizer = new Resizer(resizerConfig);
+    let resizer = new Resizer("grid-resizer", Orientation.horizontal, this.config, this.t);
+
     resizer.addEventListener('resize', ((e: CustomEvent) => {
+      // this is called while the resizer is dragged
       // this.trc.log(`Resize: resize, delta = ${e.detail.delta}`)
     }) as EventListener)
+    
     resizer.addEventListener('release', ((e: CustomEvent) => {
-        // this.trc.log(`Resize: release`)
+      // this is called after the resizer has been released
+      // this.trc.log(`Resize: release`)
     }) as EventListener);
   }
   createSelectRect() {
