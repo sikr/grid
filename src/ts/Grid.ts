@@ -1,5 +1,6 @@
 import { DragDrop }               from './DragDrop';
 import { FocusRectangle }         from './FocusRectangle';
+import { Skeleton }               from './Skeleton';
 import { SelectRectangle }        from './SelectRectangle';
 import { Resizer }                from './Resizer';
 import { Trace }                  from './Trace';
@@ -23,46 +24,14 @@ export { Grid };
 
 class Grid implements IGridMethods {
 
-
-  private t: IGridSkeleton = {
-    c: null!,
-      rchc: null!,
-        rchg: null!,
-      chc: null!,
-        chg: null!,
-      rhc: null!,
-        rhg: null!,
-      bc: null!,
-        // ltc: null!
-        //   ltg: null!
-        // ctc: null!
-        //   ctg: null!
-        // rtc: null!
-        //   rtg: null!
-
-        // lmc: null!
-        //   lmg: null!
-        cmc: null!,
-          cmg: null!,
-        // rmc: mull!,
-        //   rmg: mull!,
-
-        // lbc: mull!,
-        //   lbg: mull!,
-        // cbc: mull!,
-        //   cbg: mull!,
-        // rbc: mull!,
-        //   rbg: mull!,
-      sc: null!,
-        scs: null!
-  };
-
   private config: IGridPropertiesInternal;
 
+  private t: IGridSkeleton;
+
   private dragdrop: DragDrop;
+  private focusElement: HTMLElement | null;
   private focusRect: FocusRectangle;
   private selectRect: SelectRectangle;
-  private focusElement: HTMLElement | null;
   
   // todo: redundant; also defined in config...
   private firstVisibleColumn: number;
@@ -118,6 +87,8 @@ class Grid implements IGridMethods {
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
 
+    this.t = new Skeleton(this.config);
+
     this.dragdrop = new DragDrop();
     this.focusRect = null!;
     this.focusElement = null!;
@@ -172,7 +143,7 @@ class Grid implements IGridMethods {
   create() {
     this.init();
     this.initializeEventHandlers();
-    this.createSkeleton();
+    // skeleton is now created in the constructor
     this.createGridFragments();
     this.createResizer();
     this.attachEventHandlers();
@@ -199,80 +170,6 @@ class Grid implements IGridMethods {
   createSelectRect() {
     this.selectRect = new SelectRectangle(this.t.bc.getDomRef());
   }
-  createSkeleton() {
-    this.t.c = new GridContainer()
-    .setId(`${this.config.id}-container`)
-    .addClassName('container')
-    .setHeight(this.config.height)
-    .setWidth(this.config.width)
-    // .setHeight('100%')
-    // .setWidth('100%');
-    .setHeight(`100%`)
-    .setWidth(`100%`);
-
-    this.t.rchc = new GridContainer()
-    .setId(`${this.config.id}-row-column-header-container`)
-    .addClassName(`row-column-header-container`)
-    .setHeight(this.config.rowHeight)
-    .setWidth(this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.chc = new GridContainer()
-    .setId(`${this.config.id}-column-header-container`)
-    .addClassName(`column-header-container`)
-    .setLeft(this.config.rowHeaderWidth)
-    .setHeight(this.config.rowHeight)
-    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef())
-
-    this.t.rhc = new GridContainer()
-    .setId(`${this.config.id}-row-header-container`)
-    .addClassName(`row-header-container`)
-    .setTop(this.config.rowHeight)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight)
-    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
-    .setWidth(this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.bc = new GridContainer()
-    .setId(`${this.config.id}-body-container`)
-    .addClassName(`body-container`)
-    .setTop(this.config.rowHeight)
-    .setLeft(this.config.rowHeaderWidth)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight)
-    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
-    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.cmc = new GridContainer()
-    .setId(`${this.config.id}-center-middle-body-container`)
-    .addClassName(`center-middle-body-container`)
-    .setTop(this.config.rowHeight)
-    .setLeft(this.config.rowHeaderWidth)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight)
-    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
-    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.bc.getDomRef());
-
-    this.t.sc = new GridContainer()
-    .setId(`${this.config.id}-scroll-container`)
-    .addClassName(`scroll-container`)
-    .setTop(this.config.rowHeight)
-    .setLeft(this.config.rowHeaderWidth)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight + this.config.scrollbarSize)
-    .setHeight(this.config.height - this.config.rowHeight)
-    .setWidth(this.config.width - this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.scs = new GridContainer()
-    .setId(`${this.config.id}-scroll-container-shim`)
-    .addClassName(`scroll-container-shim`)
-    .appendTo(this.t.sc.getDomRef());
-  
-    (this.t.c as GridContainer)
-    .setHeight(`100%`)
-    .setWidth(`100%`)
-}
   createGridFragment(o: IGridFragment): GridContainer {
     let table: GridContainer;
     let row;
