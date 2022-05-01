@@ -1,27 +1,17 @@
 import { DragDrop as Dragdrop } from './DragDrop';
+import { IGridSkeleton } from './Types';
+import { IGridPropertiesInternal } from './Types';
 import { Orientation } from './Types';
 import { Trace } from './Trace';
 
 export { Resizer };
 
-export interface ResizerConfig {
-  orientation: Orientation;
-  overflowContainer: HTMLElement;
-  positions: number[];
-  resizerContainer: HTMLElement;
-  scrollContainer: HTMLElement;
-  size: number[];
-  start: number;
-  stop: number;
-  ref: HTMLElement;
-}
-
 class Resizer extends EventTarget {
-  active: boolean;
-  delta: number;
+  active: boolean = false;
+  delta: number = 0;
   domRefHandle: HTMLElement;
   domRefLine: HTMLElement;
-  dragdrop: Dragdrop;
+  dragdrop: Dragdrop = new Dragdrop();
   orientation: Orientation;
   overflowContainer: HTMLElement;
   positions: number[];
@@ -35,22 +25,18 @@ class Resizer extends EventTarget {
   mousedownHandle: EventListener;
   mouseleaveHandle: EventListener;
 
-  trc: Trace;
+  trc: Trace = new Trace('Resizer');
 
-  constructor(o: ResizerConfig) {
+  constructor(id: string, orientation: Orientation, config: IGridPropertiesInternal, skeleton: IGridSkeleton) {
     super();
-    this.trc = new Trace('Resizer');
-    this.active = false;
-    this.delta = 0;
-    this.dragdrop = new Dragdrop();
-    this.orientation = o.orientation;
-    this.overflowContainer = o.overflowContainer;
-    this.positions = o.positions;
-    this.resizerContainer = o.resizerContainer;
-    this.scrollContainer = o.scrollContainer;
-    this.size = o.size;
-    this.start = o.start;
-    this.stop = o.stop;
+    this.orientation = orientation;
+    this.overflowContainer = skeleton.c.getDomRef();
+    this.positions = config.columnPositions;
+    this.resizerContainer = skeleton.chc.getDomRef();
+    this.scrollContainer = skeleton.sc.getDomRef();
+    this.size = [6, config.rowHeight];
+    this.start = skeleton.c.getOffsetLeft() + config.rowHeaderWidth;
+    this.stop = skeleton.c.getOffsetLeft() + config.rowHeaderWidth + skeleton.bc.getWidth();
 
     this.mousemoveHandle = <EventListener>this.containerMousemoveHandler.bind(this);
     this.mousedownHandle = <EventListener>this.startResizerSession.bind(this);
@@ -58,23 +44,21 @@ class Resizer extends EventTarget {
 
     this.domRefHandle = document.createElement('div');
     this.domRefHandle.className = `${this.orientation}-resizer`;
-    this.domRefHandle.id = 'resizer';
+    this.domRefHandle.id = '${id}';
     this.domRefHandle.style.top = `0px`
     this.domRefHandle.style.left = `0px`
     this.domRefHandle.style.height = `${this.size[1]}px`
     this.domRefHandle.style.width = `${this.size[0]}px`
-    o.ref.append(this.domRefHandle);
-
+    skeleton.c.getDomRef().append(this.domRefHandle);
+    
     this.domRefLine = document.createElement('div');
     this.domRefLine.className = `${this.orientation}-resizer-line`;
-    this.domRefLine.id = `resizer-line`;
+    this.domRefLine.id = `${id}-line`;
     this.domRefLine.style.top = `25px`;
     this.domRefLine.style.left = `0px`;
-    // this.domRefLine.style.height = `${this.overflowContainer.offsetHeight}px`;
-    // this.domRefLine.style.height = `${50}px`;
     this.domRefLine.style.height = `${parseInt(this.scrollContainer.style.height, 10)}px`;
     this.domRefLine.style.width = `1px`;
-    o.ref.append(this.domRefLine);
+    skeleton.c.getDomRef().append(this.domRefLine);
 
     // register event handler
     this.resizerContainer.addEventListener('mousemove', this.mousemoveHandle);
