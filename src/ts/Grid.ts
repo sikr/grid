@@ -15,7 +15,8 @@ import { IGridPropertiesInternal } from './Types';
 import { GridRenderStyle }         from './Types';
 import { Orientation }             from './Types';
 import { IGridProperties }         from './Types';
-import { IGridFragment }           from './Types';
+import { TableComponent }          from './TableComponent';
+import { ITableComponent }         from './Types';
 import { IGridSkeleton }           from './Types';
 import { GridContainer }           from './GridContainer';
 import { GridTable }               from './GridContainer';
@@ -144,7 +145,7 @@ class Grid implements IGridMethods {
     this.init();
     this.initializeEventHandlers();
     // skeleton is now created in the constructor
-    this.createGridFragments();
+    this.createTableComponents();
     this.createResizer();
     this.attachEventHandlers();
     this.createFocusRect();
@@ -170,210 +171,87 @@ class Grid implements IGridMethods {
   createSelectRect() {
     this.selectRect = new SelectRectangle(this.t.bc.getDomRef());
   }
-  createGridFragment(o: IGridFragment): GridContainer {
-    let table: GridContainer;
-    let row;
-    let cell;
-    let r;
-    let c;
+  createTableComponents() {
+    let component: TableComponent;
 
-    table = this.createTableHTML(o);
-
-    let tbody = this.createTableBodyHTML(o);
-    table.append(tbody);
-
-    for (r = o.startRow; r <= o.stopRow; r++) {
-      row = this.createRowHTML(o);
-      tbody.append(row);
-      for (c = o.startColumn; c <= o.stopColumn; c++) {
-        cell = this.createCellHTML(o, r, c);
-        row.append(cell);
-      }
-    }
-    return table;
-  }
-  createTableBodyHTML(o: IGridFragment): HTMLElement {
-    let tbody;
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      tbody = document.createElement('tbody');
-    }
-    else {
-      tbody = document.createElement('div');
-    }
-    tbody.classList.add('grid-body')
-    return tbody;
-  }
-  createTableHTML(o: IGridFragment): GridContainer {
-    let table;
-    let tbody;
-    let colgroup;
-    let col;
-    let width = this.utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
-    let r, c;
-
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      table = new GridTable()
-        .setId(o.id)
-        .addClassName(`grid-table`)
-        .setWidth(width)
-        .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
-
-      colgroup = document.createElement('colgroup');
-      table.append(colgroup);
-      
-      for (c = o.startColumn; c <= o.stopColumn; c++) {
-        col = document.createElement('col');
-        if (o.columnWidths[c] !== 100) {
-          col.style.width = o.columnWidths[c] + 'px';
-        }
-        colgroup.append(col);
-      }
-    }
-    else// if (this.config.renderStyle == GridRenderStyle.div) 
-    {
-      table = new GridContainer()
-      .setId(o.id)
-      .addClassName(`grid-table`)
-      .setWidth(width)
-      .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
-    }
-    return table;
-  }
-  createRowHTML(o: IGridFragment): HTMLElement {
-    let row;
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      row = document.createElement('tr');
-    }
-    else {
-      row = document.createElement('div');
-      // net yet needed due to cascading
-      // row.className = 'grid-row';
-    }
-    return row;
-  }
-  createCellHTML(o: IGridFragment, row: number, column: number): HTMLElement {
-    let enumerate: number | string = 1;
-    let textContent = '';
-    let cell;
-    let id;
-    let div;
-
-    // number or chars for row column header
-    if (typeof o.enumerate == 'number') {
-      enumerate = row;
-      (textContent = (enumerate++).toString()).toString();
-    }
-    else if (typeof o.enumerate == 'string') {
-      enumerate = o.enumerate.charCodeAt(0)+column-1;
-      textContent = String.fromCharCode((<number>enumerate));
-    }
-    else if (row > 0) {
-      let dataRow = this.config.data[row-1 as keyof typeof this.config.data];
-      let key = this.config.model[column-1];
-      textContent = dataRow[key]
-      this.config.data
-    }
-
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      cell = document.createElement(o.cellType);
-    }
-    else {
-      cell = document.createElement('div');
-      if (o.cellType === 'th') {
-        cell.className = 'grid-header-cell';
-
-      }
-      else if (o.cellType === 'td') {
-        // not yet needed due to cascading
-        // cell.className = 'grid-cell';
-
-      }
-      // the width only need to be set in the first row due to display: table-cell
-      // < 2 to cover header & body cells which are in different containers...
-      if (column > 0 && row < 2 && this.config.columnWidths[column - 1] !== 100) {
-        cell.style.width = `${this.config.columnWidths[column - 1]}px`;
-      }
-    }
-
-    cell.id = `${o.cellIdPrefix}-${row.toString()}-${column.toString()}`;
-
-    cell.setAttribute('tabindex', '0');
-    if (this.config.renderStyle === GridRenderStyle.table) {
-      div = document.createElement('div');
-      div.innerText = textContent;
-      cell.append(div)
-    }
-    else {
-      cell.innerText = textContent;
-    }
-    if (o.focusHandlerRef) {
-      cell.addEventListener('focus', <EventListener>o.focusHandlerRef);
-    }
-    return cell;
-  }
-  createGridFragments() {
-    this.t.rchg = this.createGridFragment({
-      id: 'row-column-header',
-      startRow: 0,
-      stopRow: 0,
-      startColumn: 0,
-      stopColumn: 0,
-      columnWidths: [this.config.rowHeaderWidth],
-      rowHeight: this.config.rowHeight,
-      cellType: 'th',
-      cellClass: '',
-      cellIdPrefix: 'rc',
-      enumerate: null,
-      focusHandlerRef: null
-    });
+    component = new TableComponent(
+      {
+        id: 'row-column-header',
+        startRow: 0,
+        stopRow: 0,
+        startColumn: 0,
+        stopColumn: 0,
+        columnWidths: [this.config.rowHeaderWidth],
+        rowHeight: this.config.rowHeight,
+        cellType: 'th',
+        cellClass: '',
+        cellIdPrefix: 'rc',
+        enumerate: null,
+        focusHandlerRef: null
+      },
+      this.config
+    );
+    this.t.rchg = component.getDomRef();
     this.t.rchc.append(this.t.rchg.getDomRef());
 
-    this.t.chg = this.createGridFragment({
-      id: 'column-header',
-      startRow: 0,
-      stopRow: 0,
-      startColumn: 1,
-      stopColumn: this.config.columns,
-      columnWidths: [0].concat(this.config.columnWidths),
-      rowHeight: this.config.rowHeight,
-      cellType: 'th',
-      cellClass: 'foo',
-      cellIdPrefix: 'c',
-      enumerate: 'A',
-      focusHandlerRef: null
-    });
+    component = new TableComponent(
+      {
+        id: 'column-header',
+        startRow: 0,
+        stopRow: 0,
+        startColumn: 1,
+        stopColumn: this.config.columns,
+        columnWidths: [0].concat(this.config.columnWidths),
+        rowHeight: this.config.rowHeight,
+        cellType: 'th',
+        cellClass: 'foo',
+        cellIdPrefix: 'c',
+        enumerate: 'A',
+        focusHandlerRef: null
+      },
+      this.config
+    );
+    this.t.chg = component.getDomRef();
     this.t.chc.append(this.t.chg.getDomRef());
 
-    this.t.rhg = this.createGridFragment({
-      id: 'row-header',
-      startRow: 1,
-      stopRow: this.config.rows,
-      startColumn: 0,
-      stopColumn: 0,
-      columnWidths: [this.config.rowHeaderWidth],
-      rowHeight: this.config.rowHeight,
-      cellType: 'th',
-      cellClass: 'bar',
-      cellIdPrefix: 'r',
-      enumerate: 1,
-      focusHandlerRef: null
-    });
+    component = new TableComponent(
+      {
+        id: 'row-header',
+        startRow: 1,
+        stopRow: this.config.rows,
+        startColumn: 0,
+        stopColumn: 0,
+        columnWidths: [this.config.rowHeaderWidth],
+        rowHeight: this.config.rowHeight,
+        cellType: 'th',
+        cellClass: 'bar',
+        cellIdPrefix: 'r',
+        enumerate: 1,
+        focusHandlerRef: null
+      },
+      this.config
+    );
+    this.t.rhg = component.getDomRef();
     this.t.rhc.append(this.t.rhg.getDomRef());
 
-    this.t.cmg = this.createGridFragment({
-      id: 'body',
-      startRow: 1,
-      stopRow: this.config.rows,
-      startColumn: 1,
-      stopColumn: this.config.columns,
-      columnWidths: [0].concat(this.config.columnWidths),
-      rowHeight: this.config.rowHeight,
-      cellType: 'td',
-      cellClass: '',
-      cellIdPrefix: 'g',
-      enumerate: null,
-      focusHandlerRef: this.focusHandlerRef
-    });
+    component = new TableComponent(
+      {
+        id: 'body',
+        startRow: 1,
+        stopRow: this.config.rows,
+        startColumn: 1,
+        stopColumn: this.config.columns,
+        columnWidths: [0].concat(this.config.columnWidths),
+        rowHeight: this.config.rowHeight,
+        cellType: 'td',
+        cellClass: '',
+        cellIdPrefix: 'g',
+        enumerate: null,
+        focusHandlerRef: this.focusHandlerRef
+      },
+      this.config
+    );
+    this.t.cmg = component.getDomRef();
     this.t.cmc.append(this.t.cmg.getDomRef());
   }
   getCell(row: number, column: number): HTMLElement | null {

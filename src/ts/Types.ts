@@ -77,7 +77,7 @@ export interface IGridContainer {
 }
 
 // internal table fragment properties struct
-export interface IGridFragment {
+export interface ITableComponent {
   id: string;
   startRow: number;
   stopRow: number;
