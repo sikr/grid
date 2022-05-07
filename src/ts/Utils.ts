@@ -72,33 +72,33 @@ class Utils {
     return (target as HTMLElement);
   }
 
-  arraySum(array: number[]):Number {
-    return array.reduce(function (pv, cv) { return pv + cv; }, 0);
-  }
+  // arraySum(array: number[]):Number {
+  //   return array.reduce(function (pv, cv) { return pv + cv; }, 0);
+  // }
 
-  arrayRangeSum(array: number[], start: number, stop: number):number {
-    var _rv = 0;
-    for (var i = start; i <= stop; i++) {
-      _rv += array[i];
-    }
-    return _rv;
-  };
+  // arrayRangeSum(array: number[], start: number, stop: number):number {
+  //   var _rv = 0;
+  //   for (var i = start; i <= stop; i++) {
+  //     _rv += array[i];
+  //   }
+  //   return _rv;
+  // };
 
-  arrayProgressiveSum(array: number[]): number[] {
-    var _rv: number[] = [];
-    var s = 0;
-    for (var i = 0; i < array.length; i++) {
-      s = s + array[i];
-      _rv[i] = s;
-    }
-    return _rv;
-  };
+  // arrayProgressiveSum(array: number[]): number[] {
+  //   var _rv: number[] = [];
+  //   var s = 0;
+  //   for (var i = 0; i < array.length; i++) {
+  //     s = s + array[i];
+  //     _rv[i] = s;
+  //   }
+  //   return _rv;
+  // };
 
-  arrayFill(value: number, count: number): number[] {
-    var _rv: number[] = [];
-    for (var i = 0; i < count; i++) {
-      _rv.push(value);
-    }
-    return _rv;
-  };
+  // arrayFill(value: number, count: number): number[] {
+  //   var _rv: number[] = [];
+  //   for (var i = 0; i < count; i++) {
+  //     _rv.push(value);
+  //   }
+  //   return _rv;
+  // };
 }

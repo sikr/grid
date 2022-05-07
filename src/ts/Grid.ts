@@ -57,7 +57,8 @@ class Grid implements IGridMethods {
 
     this.config = {
       columns: o.columns || 20,
-      columnWidths: o.columnWidths.length > 0 ? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
+      // columnWidths: o.columnWidths.length > 0 ? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
+      columnWidths: o.columnWidths.length > 0 ? o.columnWidths : new Array(o.columns || 20).fill(100, 0, o.columns || 20),
       firstVisibleColumn: o.firstVisibleColumn || 1,
       firstVisibleRow: o.firstVisibleRow || 1,
       fixedColumns: o.fixedColumns || 0,
@@ -81,7 +82,8 @@ class Grid implements IGridMethods {
       data: o.data,
       model: o.model
     };
-    let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
+    // let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
+    let columnPositions: number[] = this.config.columnWidths.map((sum => value => sum += value)(0));
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
 
