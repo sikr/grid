@@ -1,69 +1,36 @@
-import { DragDrop }               from './DragDrop';
-import { FocusRectangle }         from './FocusRectangle';
-import { SelectRectangle }        from './SelectRectangle';
-import { Resizer, ResizerConfig } from './Resizer';
-import { Trace }                  from './Trace';
-import { Utils }                  from './Utils';
+import { DragDrop } from './DragDrop';
+import { FocusRectangle } from './FocusRectangle';
+import { Skeleton } from './Skeleton';
+import { SelectRectangle } from './SelectRectangle';
+import { Resizer } from './Resizer';
+import { Trace } from './Trace';
+import { Utils } from './Utils';
 // import { GridKeyboard } from './GridKeyboard.js';
 // import { GridFocusRect } from './GridGridFocusRect.js';
 // import { GridSelectRect } from './GridGridSelectRect.js';
 // import { GridResizer } from './GridGridResizer.js';
 
-import { IGridMethods }            from './Types';
+import { IGridMethods } from './Types';
 import { IGridPropertiesInternal } from './Types';
-import { GridRenderStyle }         from './Types';
-import { Orientation }             from './Types';
-import { IGridProperties }         from './Types';
-import { IGridFragment }           from './Types';
-import { IGridSkeleton }           from './Types';
-import { GridContainer }           from './GridContainer';
-import { GridTable }               from './GridContainer';
+import { GridRenderStyle } from './Types';
+import { Orientation } from './Types';
+import { IGridProperties } from './Types';
+import { TableComponent } from './TableComponent';
+import { IGridSkeleton } from './Types';
 
 export { Grid };
 
 class Grid implements IGridMethods {
 
-
-  private t: IGridSkeleton = {
-    c: null!,
-      rchc: null!,
-        rchg: null!,
-      chc: null!,
-        chg: null!,
-      rhc: null!,
-        rhg: null!,
-      bc: null!,
-        // ltc: null!
-        //   ltg: null!
-        // ctc: null!
-        //   ctg: null!
-        // rtc: null!
-        //   rtg: null!
-
-        // lmc: null!
-        //   lmg: null!
-        cmc: null!,
-          cmg: null!,
-        // rmc: mull!,
-        //   rmg: mull!,
-
-        // lbc: mull!,
-        //   lbg: mull!,
-        // cbc: mull!,
-        //   cbg: mull!,
-        // rbc: mull!,
-        //   rbg: mull!,
-      sc: null!,
-        scs: null!
-  };
-
   private config: IGridPropertiesInternal;
 
+  private t: IGridSkeleton;
+
   private dragdrop: DragDrop;
+  private focusElement: HTMLElement | null;
   private focusRect: FocusRectangle;
   private selectRect: SelectRectangle;
-  private focusElement: HTMLElement | null;
-  
+
   // todo: redundant; also defined in config...
   private firstVisibleColumn: number;
   // private firstVisibleRow: number;
@@ -87,10 +54,11 @@ class Grid implements IGridMethods {
   constructor(o: IGridProperties) {
     this.trc = new Trace('Grid');
     this.utils = Utils.getInstance();
-    
+
     this.config = {
       columns: o.columns || 20,
-      columnWidths: o.columnWidths.length > 0? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
+      // columnWidths: o.columnWidths.length > 0 ? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
+      columnWidths: o.columnWidths.length > 0 ? o.columnWidths : new Array(o.columns || 20).fill(100, 0, o.columns || 20),
       firstVisibleColumn: o.firstVisibleColumn || 1,
       firstVisibleRow: o.firstVisibleRow || 1,
       fixedColumns: o.fixedColumns || 0,
@@ -114,15 +82,18 @@ class Grid implements IGridMethods {
       data: o.data,
       model: o.model
     };
-    let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
+    // let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
+    let columnPositions: number[] = this.config.columnWidths.map((sum => value => sum += value)(0));
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
+
+      this.t = new Skeleton(this.config);
 
     this.dragdrop = new DragDrop();
     this.focusRect = null!;
     this.focusElement = null!;
     this.selectRect = null!;
-    
+
     this.firstVisibleColumn = this.config.firstVisibleColumn;
   }
   public appendTo(ref: HTMLElement) {
@@ -159,12 +130,10 @@ class Grid implements IGridMethods {
     }
     catch (e) { }
 
-    let passive = 
-
     this.t.sc.addEventListener('scroll', <EventListener>this.scrollHandlerRef);
     // this.t.c.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     window.addEventListener('resize', <EventListener>this.resizeHandlerRef);
-    this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
+    this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false);
     this.t.bc.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
     this.t.bc.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
     this.t.bc.addEventListener('focus', <EventListener>this.focusHandlerRef);
@@ -172,8 +141,8 @@ class Grid implements IGridMethods {
   create() {
     this.init();
     this.initializeEventHandlers();
-    this.createSkeleton();
-    this.createGridFragments();
+    // skeleton is now created in the constructor
+    this.createTableComponents();
     this.createResizer();
     this.attachEventHandlers();
     this.createFocusRect();
@@ -184,308 +153,102 @@ class Grid implements IGridMethods {
     this.focusRect = new FocusRectangle(this.t.bc.getDomRef());
   }
   createResizer() {
-    let resizerConfig: ResizerConfig = {
-      orientation: Orientation.horizontal,
-      ref: this.t.c.getDomRef(),
-      start: this.t.c.getOffsetLeft() + this.config.rowHeaderWidth,
-      stop: this.t.c.getOffsetLeft() + this.config.rowHeaderWidth + this.t.bc.getWidth(),
-      // id: 'resi',
-      size: [6, this.config.rowHeight],
-      resizerContainer: this.t.chc.getDomRef(),
-      overflowContainer: this.t.c.getDomRef(),
-      scrollContainer: this.t.sc.getDomRef(),
-      positions: this.config.columnPositions,
-      // columns: this.config.columns
-    }
-    let resizer = new Resizer(resizerConfig);
+    let resizer = new Resizer("grid-resizer", Orientation.horizontal, this.config, this.t);
+
     resizer.addEventListener('resize', ((e: CustomEvent) => {
+      // this is called while the resizer is dragged
       // this.trc.log(`Resize: resize, delta = ${e.detail.delta}`)
     }) as EventListener)
+
     resizer.addEventListener('release', ((e: CustomEvent) => {
-        // this.trc.log(`Resize: release`)
+      // this is called after the resizer has been released
+      // this.trc.log(`Resize: release`)
     }) as EventListener);
   }
   createSelectRect() {
     this.selectRect = new SelectRectangle(this.t.bc.getDomRef());
   }
-  createSkeleton() {
-    this.t.c = new GridContainer()
-    .setId(`${this.config.id}-container`)
-    .addClassName('container')
-    .setHeight(this.config.height)
-    .setWidth(this.config.width)
-    // .setHeight('100%')
-    // .setWidth('100%');
-    .setHeight(`100%`)
-    .setWidth(`100%`);
+  createTableComponents() {
+    let component: TableComponent;
 
-    this.t.rchc = new GridContainer()
-    .setId(`${this.config.id}-row-column-header-container`)
-    .addClassName(`row-column-header-container`)
-    .setHeight(this.config.rowHeight)
-    .setWidth(this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.chc = new GridContainer()
-    .setId(`${this.config.id}-column-header-container`)
-    .addClassName(`column-header-container`)
-    .setLeft(this.config.rowHeaderWidth)
-    .setHeight(this.config.rowHeight)
-    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef())
-
-    this.t.rhc = new GridContainer()
-    .setId(`${this.config.id}-row-header-container`)
-    .addClassName(`row-header-container`)
-    .setTop(this.config.rowHeight)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight)
-    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
-    .setWidth(this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.bc = new GridContainer()
-    .setId(`${this.config.id}-body-container`)
-    .addClassName(`body-container`)
-    .setTop(this.config.rowHeight)
-    .setLeft(this.config.rowHeaderWidth)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight)
-    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
-    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.cmc = new GridContainer()
-    .setId(`${this.config.id}-center-middle-body-container`)
-    .addClassName(`center-middle-body-container`)
-    .setTop(this.config.rowHeight)
-    .setLeft(this.config.rowHeaderWidth)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight)
-    .setHeight(this.config.height - this.config.rowHeight - this.config.scrollbarSize)
-    .setWidth(this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth)
-    .appendTo(this.t.bc.getDomRef());
-
-    this.t.sc = new GridContainer()
-    .setId(`${this.config.id}-scroll-container`)
-    .addClassName(`scroll-container`)
-    .setTop(this.config.rowHeight)
-    .setLeft(this.config.rowHeaderWidth)
-    // .setHeight(this.config.visibleRows * this.config.rowHeight + this.config.scrollbarSize)
-    .setHeight(this.config.height - this.config.rowHeight)
-    .setWidth(this.config.width - this.config.rowHeaderWidth)
-    .appendTo(this.t.c.getDomRef());
-
-    this.t.scs = new GridContainer()
-    .setId(`${this.config.id}-scroll-container-shim`)
-    .addClassName(`scroll-container-shim`)
-    .appendTo(this.t.sc.getDomRef());
-  
-    (this.t.c as GridContainer)
-    .setHeight(`100%`)
-    .setWidth(`100%`)
-}
-  createGridFragment(o: IGridFragment): GridContainer {
-    let table: GridContainer;
-    let row;
-    let cell;
-    let r;
-    let c;
-
-    table = this.createTableHTML(o);
-
-    let tbody = this.createTableBodyHTML(o);
-    table.append(tbody);
-
-    for (r = o.startRow; r <= o.stopRow; r++) {
-      row = this.createRowHTML(o);
-      tbody.append(row);
-      for (c = o.startColumn; c <= o.stopColumn; c++) {
-        cell = this.createCellHTML(o, r, c);
-        row.append(cell);
-      }
-    }
-    return table;
-  }
-  createTableBodyHTML(o: IGridFragment): HTMLElement {
-    let tbody;
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      tbody = document.createElement('tbody');
-    }
-    else {
-      tbody = document.createElement('div');
-    }
-    tbody.classList.add('grid-body')
-    return tbody;
-  }
-  createTableHTML(o: IGridFragment): GridContainer {
-    let table;
-    let tbody;
-    let colgroup;
-    let col;
-    let width = this.utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
-    let r, c;
-
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      table = new GridTable()
-        .setId(o.id)
-        .addClassName(`grid-table`)
-        .setWidth(width)
-        .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
-
-      colgroup = document.createElement('colgroup');
-      table.append(colgroup);
-      
-      for (c = o.startColumn; c <= o.stopColumn; c++) {
-        col = document.createElement('col');
-        if (o.columnWidths[c] !== 100) {
-          col.style.width = o.columnWidths[c] + 'px';
-        }
-        colgroup.append(col);
-      }
-    }
-    else// if (this.config.renderStyle == GridRenderStyle.div) 
-    {
-      table = new GridContainer()
-      .setId(o.id)
-      .addClassName(`grid-table`)
-      .setWidth(width)
-      .setHeight(((o.stopRow - o.startRow + 1) * o.rowHeight));
-    }
-    return table;
-  }
-  createRowHTML(o: IGridFragment): HTMLElement {
-    let row;
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      row = document.createElement('tr');
-    }
-    else {
-      row = document.createElement('div');
-      // net yet needed due to cascading
-      // row.className = 'grid-row';
-    }
-    return row;
-  }
-  createCellHTML(o: IGridFragment, row: number, column: number): HTMLElement {
-    let enumerate: number | string = 1;
-    let textContent = '';
-    let cell;
-    let id;
-    let div;
-
-    // number or chars for row column header
-    if (typeof o.enumerate == 'number') {
-      enumerate = row;
-      (textContent = (enumerate++).toString()).toString();
-    }
-    else if (typeof o.enumerate == 'string') {
-      enumerate = o.enumerate.charCodeAt(0)+column-1;
-      textContent = String.fromCharCode((<number>enumerate));
-    }
-    else if (row > 0) {
-      let dataRow = this.config.data[row-1 as keyof typeof this.config.data];
-      let key = this.config.model[column-1];
-      textContent = dataRow[key]
-      this.config.data
-    }
-
-    if (this.config.renderStyle == GridRenderStyle.table) {
-      cell = document.createElement(o.cellType);
-    }
-    else {
-      cell = document.createElement('div');
-      if (o.cellType === 'th') {
-        cell.className = 'grid-header-cell';
-
-      }
-      else if (o.cellType === 'td') {
-        // not yet needed due to cascading
-        // cell.className = 'grid-cell';
-
-      }
-      // the width only need to be set in the first row due to display: table-cell
-      // < 2 to cover header & body cells which are in different containers...
-      if (column > 0 && row < 2 && this.config.columnWidths[column - 1] !== 100) {
-        cell.style.width = `${this.config.columnWidths[column - 1]}px`;
-      }
-    }
-
-    cell.id = `${o.cellIdPrefix}-${row.toString()}-${column.toString()}`;
-
-    cell.setAttribute('tabindex', '0');
-    if (this.config.renderStyle === GridRenderStyle.table) {
-      div = document.createElement('div');
-      div.innerText = textContent;
-      cell.append(div)
-    }
-    else {
-      cell.innerText = textContent;
-    }
-    if (o.focusHandlerRef) {
-      cell.addEventListener('focus', <EventListener>o.focusHandlerRef);
-    }
-    return cell;
-  }
-  createGridFragments() {
-    this.t.rchg = this.createGridFragment({
-      id: 'row-column-header',
-      startRow: 0,
-      stopRow: 0,
-      startColumn: 0,
-      stopColumn: 0,
-      columnWidths: [this.config.rowHeaderWidth],
-      rowHeight: this.config.rowHeight,
-      cellType: 'th',
-      cellClass: '',
-      cellIdPrefix: 'rc',
-      enumerate: null,
-      focusHandlerRef: null
-    });
+    component = new TableComponent(
+      {
+        id: 'row-column-header',
+        startRow: 0,
+        stopRow: 0,
+        startColumn: 0,
+        stopColumn: 0,
+        columnWidths: [this.config.rowHeaderWidth],
+        rowHeight: this.config.rowHeight,
+        cellType: 'th',
+        cellClass: '',
+        cellIdPrefix: 'rc',
+        enumerate: null,
+        focusHandlerRef: null
+      },
+      this.config
+    );
+    this.t.rchg = component.getDomRef();
     this.t.rchc.append(this.t.rchg.getDomRef());
 
-    this.t.chg = this.createGridFragment({
-      id: 'column-header',
-      startRow: 0,
-      stopRow: 0,
-      startColumn: 1,
-      stopColumn: this.config.columns,
-      columnWidths: [0].concat(this.config.columnWidths),
-      rowHeight: this.config.rowHeight,
-      cellType: 'th',
-      cellClass: 'foo',
-      cellIdPrefix: 'c',
-      enumerate: 'A',
-      focusHandlerRef: null
-    });
+    component = new TableComponent(
+      {
+        id: 'column-header',
+        startRow: 0,
+        stopRow: 0,
+        startColumn: 1,
+        stopColumn: this.config.columns,
+        columnWidths: [0].concat(this.config.columnWidths),
+        rowHeight: this.config.rowHeight,
+        cellType: 'th',
+        cellClass: 'foo',
+        cellIdPrefix: 'c',
+        enumerate: 'A',
+        focusHandlerRef: null
+      },
+      this.config
+    );
+    this.t.chg = component.getDomRef();
     this.t.chc.append(this.t.chg.getDomRef());
 
-    this.t.rhg = this.createGridFragment({
-      id: 'row-header',
-      startRow: 1,
-      stopRow: this.config.rows,
-      startColumn: 0,
-      stopColumn: 0,
-      columnWidths: [this.config.rowHeaderWidth],
-      rowHeight: this.config.rowHeight,
-      cellType: 'th',
-      cellClass: 'bar',
-      cellIdPrefix: 'r',
-      enumerate: 1,
-      focusHandlerRef: null
-    });
+    component = new TableComponent(
+      {
+        id: 'row-header',
+        startRow: 1,
+        stopRow: this.config.rows,
+        startColumn: 0,
+        stopColumn: 0,
+        columnWidths: [this.config.rowHeaderWidth],
+        rowHeight: this.config.rowHeight,
+        cellType: 'th',
+        cellClass: 'bar',
+        cellIdPrefix: 'r',
+        enumerate: 1,
+        focusHandlerRef: null
+      },
+      this.config
+    );
+    this.t.rhg = component.getDomRef();
     this.t.rhc.append(this.t.rhg.getDomRef());
 
-    this.t.cmg = this.createGridFragment({
-      id: 'body',
-      startRow: 1,
-      stopRow: this.config.rows,
-      startColumn: 1,
-      stopColumn: this.config.columns,
-      columnWidths: [0].concat(this.config.columnWidths),
-      rowHeight: this.config.rowHeight,
-      cellType: 'td',
-      cellClass: '',
-      cellIdPrefix: 'g',
-      enumerate: null,
-      focusHandlerRef: this.focusHandlerRef
-    });
+    component = new TableComponent(
+      {
+        id: 'body',
+        startRow: 1,
+        stopRow: this.config.rows,
+        startColumn: 1,
+        stopColumn: this.config.columns,
+        columnWidths: [0].concat(this.config.columnWidths),
+        rowHeight: this.config.rowHeight,
+        cellType: 'td',
+        cellClass: '',
+        cellIdPrefix: 'g',
+        enumerate: null,
+        focusHandlerRef: this.focusHandlerRef
+      },
+      this.config
+    );
+    this.t.cmg = component.getDomRef();
     this.t.cmc.append(this.t.cmg.getDomRef());
   }
   getCell(row: number, column: number): HTMLElement | null {
@@ -502,7 +265,7 @@ class Grid implements IGridMethods {
     if (e.shiftKey) {
       to = this.selectRect.getTo();
     }
-      
+
     if (to) {
       id = to.id.split('-');
       r = parseInt(id[1], 10);
@@ -708,24 +471,24 @@ class Grid implements IGridMethods {
     // this.t.chc
     //   width: this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth
     this.t.chc.setWidth(width - this.config.scrollbarSize - this.config.rowHeaderWidth);
-    
+
     // this.t.rhc
     //  height: this.config.height - this.config.rowHeight - this.config.scrollbarSize
     this.t.rhc.setHeight(height - this.config.scrollbarSize - this.config.rowHeight);
-    
+
     // this.t.bc 
     //   width: this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth
     //   height: this.config.height - this.config.rowHeight - this.config.scrollbarSize
     this.t.bc.setWidth(width - this.config.rowHeaderWidth - this.config.scrollbarSize);
     this.t.bc.setHeight(height - this.config.rowHeight - this.config.scrollbarSize);
-    
+
     // this.t.sc 
     //   width: this.config.width - this.config.rowHeaderWidth
     //   height: this.config.height - this.config.rowHeight
     this.trc.log(width - this.config.rowHeaderWidth);
     this.t.sc.setWidth(width - this.config.rowHeaderWidth);
     this.t.sc.setHeight(height - this.config.rowHeight);
-    
+
     // this.t.scs
     //   width: this.bc.style.width + 12
     //   height: this.bc.style.width + 12
@@ -760,7 +523,7 @@ class Grid implements IGridMethods {
     if (Grid.scrollTimerId > 0) {
       clearTimeout(Grid.scrollTimerId);
     }
-    let cell = this.utils.getCell((<CustomEvent>event).detail, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+    let cell = this.utils.getCell((<CustomEvent>event).detail, this.config.renderStyle === GridRenderStyle.table ? 'TD' : 'DIV');
     // if (cell) {
     //   this.trc.log(`cell: ${cell.id}`)
     // }
@@ -784,14 +547,14 @@ class Grid implements IGridMethods {
   }
   mousedownHandler(event: MouseEvent) {
     // this.trc.log('Mousedown');
-    let cell: HTMLElement | null = this.utils.getCell(event, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+    let cell: HTMLElement | null = this.utils.getCell(event, this.config.renderStyle === GridRenderStyle.table ? 'TD' : 'DIV');
     if (cell && cell.id.indexOf('g-') === 0) {
       this.selectRect.hide();
-      this.dragdrop.startSession(event, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+      this.dragdrop.startSession(event, this.config.renderStyle === GridRenderStyle.table ? 'TD' : 'DIV');
 
       this.selectDragHandlerRef = <EventListener>this.selectDragHandler.bind(this);
       this.dragdrop.addEventListener('drag', this.selectDragHandlerRef);
-      
+
       this.selectReleaseHandlerRef = <EventListener>this.selectReleaseHandler.bind(this);
       this.dragdrop.addEventListener('release', this.selectReleaseHandlerRef);
     }
