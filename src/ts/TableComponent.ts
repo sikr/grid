@@ -54,7 +54,8 @@ export class TableComponent {
     let tbody;
     let colgroup;
     let col;
-    let width = this.utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
+    // let width = this.utils.arrayRangeSum(o.columnWidths, o.startColumn, o.stopColumn);
+    let width = o.columnWidths.reduce((p, c, i)  => (i >= o.startColumn && i <= o.stopColumn) ? p + c : p, 0);
     let r, c;
     
     if (this.config.renderStyle == GridRenderStyle.table) {

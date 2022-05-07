@@ -1,25 +1,22 @@
-import { DragDrop }               from './DragDrop';
-import { FocusRectangle }         from './FocusRectangle';
-import { Skeleton }               from './Skeleton';
-import { SelectRectangle }        from './SelectRectangle';
-import { Resizer }                from './Resizer';
-import { Trace }                  from './Trace';
-import { Utils }                  from './Utils';
+import { DragDrop } from './DragDrop';
+import { FocusRectangle } from './FocusRectangle';
+import { Skeleton } from './Skeleton';
+import { SelectRectangle } from './SelectRectangle';
+import { Resizer } from './Resizer';
+import { Trace } from './Trace';
+import { Utils } from './Utils';
 // import { GridKeyboard } from './GridKeyboard.js';
 // import { GridFocusRect } from './GridGridFocusRect.js';
 // import { GridSelectRect } from './GridGridSelectRect.js';
 // import { GridResizer } from './GridGridResizer.js';
 
-import { IGridMethods }            from './Types';
+import { IGridMethods } from './Types';
 import { IGridPropertiesInternal } from './Types';
-import { GridRenderStyle }         from './Types';
-import { Orientation }             from './Types';
-import { IGridProperties }         from './Types';
-import { TableComponent }          from './TableComponent';
-import { ITableComponent }         from './Types';
-import { IGridSkeleton }           from './Types';
-import { GridContainer }           from './GridContainer';
-import { GridTable }               from './GridContainer';
+import { GridRenderStyle } from './Types';
+import { Orientation } from './Types';
+import { IGridProperties } from './Types';
+import { TableComponent } from './TableComponent';
+import { IGridSkeleton } from './Types';
 
 export { Grid };
 
@@ -33,7 +30,7 @@ class Grid implements IGridMethods {
   private focusElement: HTMLElement | null;
   private focusRect: FocusRectangle;
   private selectRect: SelectRectangle;
-  
+
   // todo: redundant; also defined in config...
   private firstVisibleColumn: number;
   // private firstVisibleRow: number;
@@ -57,10 +54,11 @@ class Grid implements IGridMethods {
   constructor(o: IGridProperties) {
     this.trc = new Trace('Grid');
     this.utils = Utils.getInstance();
-    
+
     this.config = {
       columns: o.columns || 20,
-      columnWidths: o.columnWidths.length > 0? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
+      // columnWidths: o.columnWidths.length > 0 ? o.columnWidths : this.utils.arrayFill(100, o.columns || 20),
+      columnWidths: o.columnWidths.length > 0 ? o.columnWidths : new Array(o.columns || 20).fill(100, 0, o.columns || 20),
       firstVisibleColumn: o.firstVisibleColumn || 1,
       firstVisibleRow: o.firstVisibleRow || 1,
       fixedColumns: o.fixedColumns || 0,
@@ -84,17 +82,18 @@ class Grid implements IGridMethods {
       data: o.data,
       model: o.model
     };
-    let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
+    // let columnPositions: number[] = this.utils.arrayProgressiveSum(this.config.columnWidths);
+    let columnPositions: number[] = this.config.columnWidths.map((sum => value => sum += value)(0));
     this.config.columnPositions = columnPositions;
     this.config.visibleRows = Math.floor((this.config.height - this.config.scrollbarSize) / this.config.rowHeight - 1),
 
-    this.t = new Skeleton(this.config);
+      this.t = new Skeleton(this.config);
 
     this.dragdrop = new DragDrop();
     this.focusRect = null!;
     this.focusElement = null!;
     this.selectRect = null!;
-    
+
     this.firstVisibleColumn = this.config.firstVisibleColumn;
   }
   public appendTo(ref: HTMLElement) {
@@ -131,12 +130,10 @@ class Grid implements IGridMethods {
     }
     catch (e) { }
 
-    let passive = 
-
     this.t.sc.addEventListener('scroll', <EventListener>this.scrollHandlerRef);
     // this.t.c.addEventListener('resize', <EventListener>this.resizeHandlerRef);
     window.addEventListener('resize', <EventListener>this.resizeHandlerRef);
-    this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false );
+    this.t.bc.addEventListener('wheel', <EventListener>this.mousewheelHandlerRef, supportsPassive ? ({ passive: true } as EventListenerOptions) : false);
     this.t.bc.addEventListener('keydown', <EventListener>this.keydownHandlerRef);
     this.t.bc.addEventListener('mousedown', <EventListener>this.mousedownHandlerRef);
     this.t.bc.addEventListener('focus', <EventListener>this.focusHandlerRef);
@@ -162,7 +159,7 @@ class Grid implements IGridMethods {
       // this is called while the resizer is dragged
       // this.trc.log(`Resize: resize, delta = ${e.detail.delta}`)
     }) as EventListener)
-    
+
     resizer.addEventListener('release', ((e: CustomEvent) => {
       // this is called after the resizer has been released
       // this.trc.log(`Resize: release`)
@@ -268,7 +265,7 @@ class Grid implements IGridMethods {
     if (e.shiftKey) {
       to = this.selectRect.getTo();
     }
-      
+
     if (to) {
       id = to.id.split('-');
       r = parseInt(id[1], 10);
@@ -474,24 +471,24 @@ class Grid implements IGridMethods {
     // this.t.chc
     //   width: this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth
     this.t.chc.setWidth(width - this.config.scrollbarSize - this.config.rowHeaderWidth);
-    
+
     // this.t.rhc
     //  height: this.config.height - this.config.rowHeight - this.config.scrollbarSize
     this.t.rhc.setHeight(height - this.config.scrollbarSize - this.config.rowHeight);
-    
+
     // this.t.bc 
     //   width: this.config.width - this.config.scrollbarSize - this.config.rowHeaderWidth
     //   height: this.config.height - this.config.rowHeight - this.config.scrollbarSize
     this.t.bc.setWidth(width - this.config.rowHeaderWidth - this.config.scrollbarSize);
     this.t.bc.setHeight(height - this.config.rowHeight - this.config.scrollbarSize);
-    
+
     // this.t.sc 
     //   width: this.config.width - this.config.rowHeaderWidth
     //   height: this.config.height - this.config.rowHeight
     this.trc.log(width - this.config.rowHeaderWidth);
     this.t.sc.setWidth(width - this.config.rowHeaderWidth);
     this.t.sc.setHeight(height - this.config.rowHeight);
-    
+
     // this.t.scs
     //   width: this.bc.style.width + 12
     //   height: this.bc.style.width + 12
@@ -526,7 +523,7 @@ class Grid implements IGridMethods {
     if (Grid.scrollTimerId > 0) {
       clearTimeout(Grid.scrollTimerId);
     }
-    let cell = this.utils.getCell((<CustomEvent>event).detail, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+    let cell = this.utils.getCell((<CustomEvent>event).detail, this.config.renderStyle === GridRenderStyle.table ? 'TD' : 'DIV');
     // if (cell) {
     //   this.trc.log(`cell: ${cell.id}`)
     // }
@@ -550,14 +547,14 @@ class Grid implements IGridMethods {
   }
   mousedownHandler(event: MouseEvent) {
     // this.trc.log('Mousedown');
-    let cell: HTMLElement | null = this.utils.getCell(event, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+    let cell: HTMLElement | null = this.utils.getCell(event, this.config.renderStyle === GridRenderStyle.table ? 'TD' : 'DIV');
     if (cell && cell.id.indexOf('g-') === 0) {
       this.selectRect.hide();
-      this.dragdrop.startSession(event, this.config.renderStyle === GridRenderStyle.table? 'TD' : 'DIV');
+      this.dragdrop.startSession(event, this.config.renderStyle === GridRenderStyle.table ? 'TD' : 'DIV');
 
       this.selectDragHandlerRef = <EventListener>this.selectDragHandler.bind(this);
       this.dragdrop.addEventListener('drag', this.selectDragHandlerRef);
-      
+
       this.selectReleaseHandlerRef = <EventListener>this.selectReleaseHandler.bind(this);
       this.dragdrop.addEventListener('release', this.selectReleaseHandlerRef);
     }
